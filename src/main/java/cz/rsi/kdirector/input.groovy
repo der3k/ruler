@@ -1,5 +1,7 @@
 package cz.rsi.kdirector
 
+// TODO how to hide result window, options: global key down or mouse move, timeout, hot key
+
 import com.melloware.jintellitype.HotkeyListener
 import com.melloware.jintellitype.JIntellitype
 import com.sun.awt.AWTUtilities
@@ -160,4 +162,3 @@ hook.addHotKeyListener(hookListener)
 hook.registerHotKey(1, JIntellitype.MOD_CONTROL, (int) ' ')
 hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ')
 
-// TODO how to hide result window, options: global key down or mouse move, timeout, hot key
