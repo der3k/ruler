@@ -1,5 +1,6 @@
 package cz.rsi.kdirector
 
+// TODO make installation package
 // TODO how to hide result window, options: global key down or mouse move, timeout, hot key
 
 import com.melloware.jintellitype.HotkeyListener
