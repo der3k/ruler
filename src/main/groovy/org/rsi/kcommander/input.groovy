@@ -73,7 +73,7 @@ class InputField extends JTextField {
         }
 
         def k = event.getKeyCode()
-        println event.getKeyChar()
+//        println event.getKeyChar()
         if (k == KeyEvent.VK_ESCAPE) {
           event.consume()
           System.exit(1)
@@ -180,7 +180,7 @@ class HookHotKeyListener implements HotkeyListener {
   }
 }
 
-JIntellitype.setLibraryLocation('C:/Users/sikorric/IdeaProjects/kcommander/lib/JIntellitype64.dll')
+JIntellitype.setLibraryLocation('../lib/JIntellitype64.dll')
 def hook = JIntellitype.getInstance()
 def hookListener = new HookHotKeyListener()
 def input = new InputWindow(hookListener)
