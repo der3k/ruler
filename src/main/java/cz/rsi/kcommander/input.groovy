@@ -192,5 +192,3 @@ def input = new InputWindow(hookListener)
 hookListener.input = input
 hook.addHotKeyListener(hookListener)
 hook.registerHotKey(1, JIntellitype.MOD_CONTROL, (int) ' ')
-hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ')
-
