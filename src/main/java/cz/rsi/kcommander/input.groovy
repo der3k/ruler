@@ -1,4 +1,4 @@
-package cz.rsi.kdirector
+package cz.rsi.kcommander
 
 // TODO make installation package
 // TODO how to hide result window, options: global key down or mouse move, timeout, hot key
@@ -154,7 +154,7 @@ class HookHotKeyListener implements HotkeyListener {
     }
 }
 
-JIntellitype.setLibraryLocation('C:/Users/sikorric/IdeaProjects/kdirector/lib/JIntellitype64.dll')
+JIntellitype.setLibraryLocation('C:/Users/sikorric/IdeaProjects/kcommander/lib/JIntellitype64.dll')
 def hook = JIntellitype.getInstance()
 def hookListener = new HookHotKeyListener()
 def input = new InputWindow(hookListener)
