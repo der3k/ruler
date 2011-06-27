@@ -1,7 +1,27 @@
+apply plugin: 'groovy'
+apply plugin: 'application'
+
+groupId = 'org.rsi.kcommander'
+atrifactId ='kcommander-core'
+
+version = '1.0-M1'
+
+mainClassName = 'cz.rsi.kcommander.input'
+
 task wrapper(type: Wrapper) {
   gradleVersion = '1.0-milestone-3'
 }
 
 task install {
   println "Installing the application."
+}
+
+dependencies {
+  compile 'com.melloware:jintellitype:1.3.6'
+  groovy localGroovy()
+}
+
+repositories {
+  flatDir name: 'libs', dirs: 'lib'
+  mavenCentral()
 }
