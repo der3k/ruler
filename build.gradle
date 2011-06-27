@@ -6,7 +6,7 @@ atrifactId ='kcommander-core'
 
 version = '1.0-M1'
 
-mainClassName = 'cz.rsi.kcommander.input'
+mainClassName = 'org.rsi.kcommander.input'
 
 task wrapper(type: Wrapper) {
   gradleVersion = '1.0-milestone-3'
