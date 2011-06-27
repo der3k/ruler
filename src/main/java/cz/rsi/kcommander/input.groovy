@@ -1,9 +1,5 @@
 package cz.rsi.kcommander
 
-// TODO make installation package
-// TODO how to hide result window, options: global key down or mouse move, timeout, hot key
-
-
 import com.melloware.jintellitype.HotkeyListener
 import com.melloware.jintellitype.JIntellitype
 import com.sun.awt.AWTUtilities
@@ -14,8 +10,6 @@ import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import javax.swing.*
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
 
 class InputWindow extends JDialog {
   def hookListener
@@ -137,6 +131,7 @@ class WhispererWindow extends JWindow {
 
 class ResultWindow extends JDialog {
   def text
+
   ResultWindow(content) {
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent event) {
