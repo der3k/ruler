@@ -1,4 +1,4 @@
-package cz.rsi.kcommander
+package org.rsi.kcommander
 
 import com.melloware.jintellitype.HotkeyListener
 import com.melloware.jintellitype.JIntellitype
