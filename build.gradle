@@ -1,5 +1,7 @@
 apply plugin: 'groovy'
 apply plugin: 'application'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
 
 groupId = 'org.rsi.kcommander'
 atrifactId ='kcommander-core'
@@ -17,12 +19,13 @@ task install {
 }
 
 dependencies {
-  compile 'com.melloware:jintellitype:1.3.6'
+  compile files('lib/jintellitype-1.3.6.jar')
+  compile files('lib/jna-3.3.0.jar')
+  compile files('lib/jna-3.3.0-platform.jar')
   runtime fileTree(dir: 'lib', include: '*.dll')
-  groovy localGroovy()
+  groovy 'org.codehaus.groovy:groovy-all:1.8.0'
 }
 
 repositories {
-  flatDir name: 'libs', dirs: 'lib'
   mavenCentral()
 }
