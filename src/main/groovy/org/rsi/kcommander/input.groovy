@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import javax.swing.*
+import org.slf4j.LoggerFactory
 
 class InputWindow extends JDialog {
   def hookListener
@@ -37,6 +38,7 @@ class InputWindow extends JDialog {
 }
 
 class InputField extends JTextField {
+  def logger = LoggerFactory.getLogger(InputField.class)
   def input
   def result
   def whisperer
@@ -83,6 +85,7 @@ class InputField extends JTextField {
           setText(null)
           input.hide()
           whisperer.hide()
+          logger.info('Executing \'{}\'', command)
           if ('now' == command)
             command = new Date().format('hh:mm dd.MM.yyyy')
           result = new ResultWindow(command)

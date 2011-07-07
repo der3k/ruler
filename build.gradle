@@ -11,6 +11,7 @@ dependencies {
   compile files('lib/jintellitype-1.3.6.jar')
   compile files('lib/jna-3.3.0.jar')
   compile files('lib/jna-3.3.0-platform.jar')
+  compile 'ch.qos.logback:logback-classic:0.9.29'
   runtime fileTree(dir: 'lib', include: '*.dll')
   groovy 'org.codehaus.groovy:groovy-all:1.8.0'
 }
