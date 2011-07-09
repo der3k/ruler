@@ -9,11 +9,17 @@ import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import javax.swing.*
+import org.sikora.ruler.Draft
+import org.sikora.ruler.InputProvider
+import org.sikora.ruler.ui.DraftKeyListener
+import org.sikora.ruler.DraftListener
 import org.slf4j.LoggerFactory
+import javax.swing.*
+import java.security.Key
 
 class InputWindow extends JDialog {
   def hookListener
+  def input
 
   InputWindow(hookListener) {
     this.hookListener = hookListener
@@ -27,7 +33,7 @@ class InputWindow extends JDialog {
     setSize(800, 50)
     setLocation(0, 0)
     getContentPane().setBackground(Color.BLACK)
-    def input = new InputField(this, hookListener)
+    input = new InputField(this, hookListener)
     input.setBackground(Color.BLACK)
     input.setForeground(Color.YELLOW)
     input.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4))
@@ -35,14 +41,21 @@ class InputWindow extends JDialog {
     AWTUtilities.setWindowOpacity(this, 0.85f)
 //    show()
   }
+
+  void reset() {
+    input.listener.reset()
+    input.setText('')
+  }
 }
 
-class InputField extends JTextField {
+class InputField extends JTextField implements InputProvider {
   def logger = LoggerFactory.getLogger(InputField.class)
-  def input
   def result
   def whisperer
   def hookListener
+  def static final List<Integer> ACTION_KEYS = [KeyEvent.VK_ESCAPE, KeyEvent.VK_TAB, KeyEvent.VK_ENTER]
+  def listener
+  def input
 
   InputField(input, hookListener) {
     super("")
@@ -50,15 +63,14 @@ class InputField extends JTextField {
     this.hookListener = hookListener
     setFont(new Font('Candara', Font.PLAIN, 35))
     setFocusTraversalKeysEnabled(false)
-    addKeyListener(new KeyAdapter() {
-
-      @Override
-      void keyReleased(KeyEvent e) {
+    listener = new DraftKeyListener(this, new DraftListener() {
+      void onChange(Draft draft) {
         if (whisperer == null) {
           whisperer = new WhispererWindow()
           whisperer.setLocation(0, 50)
           whisperer.setSize(600, 355)
         }
+
         if (!getText().isEmpty()) {
           fillWhisperer(whisperer.text, getText())
           whisperer.show()
@@ -67,39 +79,45 @@ class InputField extends JTextField {
         }
       }
 
-      @Override
-      void keyPressed(KeyEvent event) {
-        if (result != null) {
-          result.hide()
-          result = null
-        }
-
-        def k = event.getKeyCode()
-//        println event.getKeyChar()
-        if (k == KeyEvent.VK_ESCAPE) {
-          event.consume()
-          System.exit(1)
-        }
-        if (k == KeyEvent.VK_ENTER) {
-          def command = getText()
-          setText(null)
-          input.hide()
-          whisperer.hide()
-          logger.info('Executing \'{}\'', command)
-          if ('now' == command)
-            command = new Date().format('hh:mm dd.MM.yyyy')
-          result = new ResultWindow(command)
-          hookListener.result = result
-          result.show()
-          event.consume()
-        }
-        if (k == KeyEvent.VK_TAB) {
-          setText(getText() + 'TAB')
-          event.consume()
-        }
+      Draft onComplete(Draft draft, int key) {
+        String newDraft = "C${KeyEvent.getKeyText(key)} "
+        Draft.parse(newDraft, newDraft.size() )
       }
+
+      void onExecute(Draft draft) {
+        def command = text()
+        setTextAndPosition('', 0)
+        input.hide()
+        whisperer.hide()
+        if ('now' == command)
+          command = new Date().format('hh:mm dd.MM.yyyy')
+        result = new ResultWindow(command)
+        hookListener.result = result
+        result.show()
+      }
+
+      void onCancel(Draft draft) {
+        System.exit(1)
+      }
+
     })
+    addKeyListener(listener)
   }
+
+  String text() {
+    getText()
+  }
+
+  int position() {
+    getCaretPosition()
+  }
+
+  void setTextAndPosition(String text, int position) {
+    setText(text)
+    setCaretPosition(position)
+  }
+
+
 
   def fillWhisperer(JTextArea whisperer, text) {
     def content = new StringBuilder()
@@ -171,6 +189,7 @@ class HookHotKeyListener implements HotkeyListener {
   void onHotKey(int hookId) {
     switch (hookId) {
       case 1:
+        input?.reset()
         input?.show()
         result?.hide()
         break;

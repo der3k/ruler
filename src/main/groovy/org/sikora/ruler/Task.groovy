@@ -6,12 +6,6 @@ package org.sikora.ruler
  * Time: 14:56
  */
  
-class Task {
-  Assistant[] assistants
-
-  
-  def Result execute(Specification specification) {
-    
-  }
-
+interface Task {
+  Result execute()
 }
