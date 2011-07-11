@@ -58,24 +58,16 @@ public class InputTest extends Specification {
   }
 
   def 'can be updated'() {
-    def update = Input.of('a').updateTo(Input.of('ab'), Action.UPDATE)
+    def update = Input.of('a').updateTo(Input.of('ab'))
   expect:
     update.oldValue() == Input.of('a')
     update.newValue() == Input.of('ab')
-    update.action() == Action.UPDATE
     update.toString() == 'a| => ab|'
   }
 
   def 'updated input value cannot be null'() {
   when:
-    Input.of('a').updateTo(null, Action.UPDATE)
-  then:
-    thrown IllegalArgumentException
-  }
-
-  def 'updated action cannot be null'() {
-  when:
-    Input.of('a').updateTo(Input.EMPTY, null)
+    Input.of('a').updateTo(null)
   then:
     thrown IllegalArgumentException
   }

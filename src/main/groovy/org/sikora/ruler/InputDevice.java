@@ -12,8 +12,6 @@ public interface InputDevice {
 
   public void removeListener(InputListener listener);
 
-  public enum Action {
-    RESET, UPDATE, SUBMIT, CANCEL
-  }
+  
 
 }

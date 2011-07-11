@@ -6,5 +6,5 @@ package org.sikora.ruler;
  * Time: 18:31
  */
 public interface InputListener {
-  void onChange(Input.Update update);
+  void onChange(Input.Change change);
 }

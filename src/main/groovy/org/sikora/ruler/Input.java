@@ -30,8 +30,8 @@ public final class Input {
     this.marker = marker;
   }
 
-  public Update updateTo(final Input value, final InputDevice.Action action) {
-    return new Update(value, action);
+  public Change updateTo(final Input value) {
+    return new Change(value);
   }
 
   public String text() {
@@ -69,17 +69,13 @@ public final class Input {
     return result;
   }
 
-  class Update {
+  class Change {
     private final Input value;
-    private final InputDevice.Action action;
 
-    private Update(final Input value, final InputDevice.Action action) {
+    private Change(final Input value) {
       if (value == null)
         throw new IllegalArgumentException("new input value cannot be null");
-      if (action == null)
-        throw new IllegalArgumentException("action cannot be null");
       this.value = value;
-      this.action = action;
     }
 
     public Input oldValue() {
@@ -88,10 +84,6 @@ public final class Input {
 
     public Input newValue() {
       return value;
-    }
-
-    public InputDevice.Action action() {
-      return action;
     }
 
     @Override
