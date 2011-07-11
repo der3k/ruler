@@ -3,7 +3,7 @@ package org.sikora.ruler.ui
 import java.awt.event.KeyEvent
 import org.sikora.ruler.Draft
 import org.sikora.ruler.DraftListener
-import org.sikora.ruler.InputProvider
+import org.sikora.ruler.InputProviderOld
 import spock.lang.Specification
 
 /**
@@ -12,7 +12,7 @@ import spock.lang.Specification
  * Time: 13:29
  */
 class DraftKeyListenerTest extends Specification {
-  def input = Mock(InputProvider)
+  def input = Mock(InputProviderOld)
   def draftListener = Mock(DraftListener)
   def keyListener = new DraftKeyListener(input, draftListener)
   def event = Mock(KeyEvent)

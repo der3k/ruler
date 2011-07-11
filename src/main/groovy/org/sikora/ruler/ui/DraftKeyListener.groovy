@@ -4,7 +4,7 @@ import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import org.sikora.ruler.Draft
 import org.sikora.ruler.DraftListener
-import org.sikora.ruler.InputProvider
+import org.sikora.ruler.InputProviderOld
 import org.slf4j.LoggerFactory
 import static java.awt.event.KeyEvent.*
 
@@ -27,11 +27,11 @@ class DraftKeyListener extends KeyAdapter {
       '9'
   ].collect { it as char }
   final DraftListener draftListener
-  final InputProvider input
+  final InputProviderOld input
 
   Draft draft = Draft.EMPTY
 
-  DraftKeyListener(final InputProvider input, final DraftListener draftListener) {
+  DraftKeyListener(final InputProviderOld input, final DraftListener draftListener) {
     this.input = input
     this.draftListener = draftListener
   }

@@ -10,12 +10,13 @@ import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import org.sikora.ruler.Draft
-import org.sikora.ruler.InputProvider
+
 import org.sikora.ruler.ui.DraftKeyListener
 import org.sikora.ruler.DraftListener
 import org.slf4j.LoggerFactory
 import javax.swing.*
-import java.security.Key
+
+import org.sikora.ruler.InputProviderOld
 
 class InputWindow extends JDialog {
   def hookListener
@@ -33,7 +34,7 @@ class InputWindow extends JDialog {
     setSize(800, 50)
     setLocation(0, 0)
     getContentPane().setBackground(Color.BLACK)
-    input = new InputField(this, hookListener)
+    input = new InputFieldOld(this, hookListener)
     input.setBackground(Color.BLACK)
     input.setForeground(Color.YELLOW)
     input.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4))
@@ -48,8 +49,8 @@ class InputWindow extends JDialog {
   }
 }
 
-class InputField extends JTextField implements InputProvider {
-  def logger = LoggerFactory.getLogger(InputField.class)
+class InputFieldOld extends JTextField implements InputProviderOld {
+  def logger = LoggerFactory.getLogger(InputFieldOld.class)
   def result
   def whisperer
   def hookListener
@@ -57,7 +58,7 @@ class InputField extends JTextField implements InputProvider {
   def listener
   def input
 
-  InputField(input, hookListener) {
+  InputFieldOld(input, hookListener) {
     super("")
     this.input = input
     this.hookListener = hookListener
