@@ -8,10 +8,25 @@ package org.sikora.ruler;
 public interface InputDevice {
   public void input(Input input);
 
+  public void hints(Hint[] hints);
+
   public void addListener(InputListener listener);
 
   public void removeListener(InputListener listener);
 
-  
+  public class UpdateEvent {
 
+  }
+
+  public class CompleteEvent {
+
+  }
+
+  public class SubmitEvent {
+
+  }
+
+  public class CancelEvent {
+    
+  }
 }
