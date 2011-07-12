@@ -6,4 +6,9 @@ package org.sikora.ruler
  * Time: 11:49
   */
 class Hint {
+  static final Hint NONE = new Hint()
+
+  def ok() {
+    
+  }
 }

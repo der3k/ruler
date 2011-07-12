@@ -11,12 +11,21 @@ import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import org.sikora.ruler.Draft
 
-import org.sikora.ruler.ui.DraftKeyListener
 import org.sikora.ruler.DraftListener
 import org.slf4j.LoggerFactory
 import javax.swing.*
 
 import org.sikora.ruler.InputProviderOld
+
+import org.sikora.ruler.ui.AwtBroker
+import org.sikora.ruler.ui.InputDriver
+import org.sikora.ruler.model.input.Input
+import org.sikora.ruler.Hint
+import org.sikora.ruler.model.input.BrokerListener
+import org.sikora.ruler.model.input.Broker.UpdateEvent
+import org.sikora.ruler.model.input.Broker.CompleteEvent
+import org.sikora.ruler.model.input.Broker.CancelEvent
+import org.sikora.ruler.model.input.Broker.SubmitEvent
 
 class InputWindow extends JDialog {
   def hookListener
@@ -44,18 +53,18 @@ class InputWindow extends JDialog {
   }
 
   void reset() {
-    input.listener.reset()
+//    input.listener.reset()
     input.setText('')
   }
 }
 
-class InputFieldOld extends JTextField implements InputProviderOld {
+class InputFieldOld extends JTextField implements InputDriver {
   def logger = LoggerFactory.getLogger(InputFieldOld.class)
   def result
   def whisperer
   def hookListener
   def static final List<Integer> ACTION_KEYS = [KeyEvent.VK_ESCAPE, KeyEvent.VK_TAB, KeyEvent.VK_ENTER]
-  def listener
+  AwtBroker broker
   def input
 
   InputFieldOld(input, hookListener) {
@@ -64,8 +73,10 @@ class InputFieldOld extends JTextField implements InputProviderOld {
     this.hookListener = hookListener
     setFont(new Font('Candara', Font.PLAIN, 35))
     setFocusTraversalKeysEnabled(false)
-    listener = new DraftKeyListener(this, new DraftListener() {
-      void onChange(Draft draft) {
+    broker = new AwtBroker(this)
+    def listener = new BrokerListener() {
+      @Override
+      void onChange(UpdateEvent updateEvent) {
         if (whisperer == null) {
           whisperer = new WhispererWindow()
           whisperer.setLocation(0, 50)
@@ -80,14 +91,21 @@ class InputFieldOld extends JTextField implements InputProviderOld {
         }
       }
 
-      Draft onComplete(Draft draft, int key) {
-        String newDraft = "C${KeyEvent.getKeyText(key)} "
-        Draft.parse(newDraft, newDraft.size() )
+      @Override
+      void onComplete(CompleteEvent completeEvent) {
+        def text = completeEvent.context().input().text() + "COMPLTED "
+        completeEvent.context().broker().input(Input.of(text))
       }
 
-      void onExecute(Draft draft) {
-        def command = text()
-        setTextAndPosition('', 0)
+      @Override
+      void onCancel(CancelEvent cancelEvent) {
+        System.exit(1)
+      }
+
+      @Override
+      void onSubmit(SubmitEvent submitEvent) {
+        def command = submitEvent.context().input().text()
+        submitEvent.context().broker().input(Input.EMPTY)
         input.hide()
         whisperer.hide()
         if ('now' == command)
@@ -97,28 +115,32 @@ class InputFieldOld extends JTextField implements InputProviderOld {
         result.show()
       }
 
-      void onCancel(Draft draft) {
-        System.exit(1)
-      }
+    }
 
-    })
-    addKeyListener(listener)
+    broker.addListener(listener)
+    addKeyListener(broker)
   }
 
-  String text() {
-    getText()
+  @Override
+  Input input() {
+    Input.of(getText(), getCaretPosition())
   }
 
-  int position() {
-    getCaretPosition()
+  @Override
+  void input(Input input) {
+    setText(input.text())
+    setCaretPosition(input.marker())
   }
 
-  void setTextAndPosition(String text, int position) {
-    setText(text)
-    setCaretPosition(position)
+  @Override
+  Hint[] hints() {
+    return new Hint[0]  //To change body of implemented methods use File | Settings | File Templates.
   }
 
-
+  @Override
+  void hints(Hint[] hints) {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
 
   def fillWhisperer(JTextArea whisperer, text) {
     def content = new StringBuilder()
