@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 import javax.swing.*
 
 import org.sikora.ruler.ui.AwtBroker
-import org.sikora.ruler.ui.InputDriver
+import org.sikora.ruler.model.input.InputDriver
 import org.sikora.ruler.model.input.Input
 import org.sikora.ruler.Hint
 import org.sikora.ruler.model.input.BrokerListener

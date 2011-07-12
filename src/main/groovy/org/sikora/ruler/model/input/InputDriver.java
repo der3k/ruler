@@ -1,7 +1,6 @@
-package org.sikora.ruler.ui;
+package org.sikora.ruler.model.input;
 
 import org.sikora.ruler.Hint;
-import org.sikora.ruler.model.input.Input;
 
 /**
  * User: sikorric
@@ -17,5 +16,5 @@ public interface InputDriver {
   public Hint[] hints();
 
   public void setHints(Hint[] hints);
-    
+
 }

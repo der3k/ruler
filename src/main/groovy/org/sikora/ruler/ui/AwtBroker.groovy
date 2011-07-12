@@ -9,6 +9,7 @@ import org.sikora.ruler.model.input.Context
 import org.sikora.ruler.model.input.Input
 import org.slf4j.LoggerFactory
 import static java.awt.event.KeyEvent.*
+import org.sikora.ruler.model.input.InputDriver
 
 /**
  * User: der3k
