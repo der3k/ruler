@@ -9,13 +9,9 @@ import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import org.sikora.ruler.Draft
 
-import org.sikora.ruler.DraftListener
 import org.slf4j.LoggerFactory
 import javax.swing.*
-
-import org.sikora.ruler.InputProviderOld
 
 import org.sikora.ruler.ui.AwtBroker
 import org.sikora.ruler.ui.InputDriver
@@ -94,7 +90,7 @@ class InputFieldOld extends JTextField implements InputDriver {
       @Override
       void onComplete(CompleteEvent completeEvent) {
         def text = completeEvent.context().input().text() + "COMPLTED "
-        completeEvent.context().broker().input(Input.of(text))
+        completeEvent.context().broker().setInput(Input.of(text))
       }
 
       @Override
@@ -105,7 +101,7 @@ class InputFieldOld extends JTextField implements InputDriver {
       @Override
       void onSubmit(SubmitEvent submitEvent) {
         def command = submitEvent.context().input().text()
-        submitEvent.context().broker().input(Input.EMPTY)
+        submitEvent.context().broker().setInput(Input.EMPTY)
         input.hide()
         whisperer.hide()
         if ('now' == command)
@@ -127,18 +123,16 @@ class InputFieldOld extends JTextField implements InputDriver {
   }
 
   @Override
-  void input(Input input) {
+  void setInput(Input input) {
     setText(input.text())
     setCaretPosition(input.marker())
   }
 
-  @Override
   Hint[] hints() {
-    return new Hint[0]  //To change body of implemented methods use File | Settings | File Templates.
+    new Hint[0]  //To change body of implemented methods use File | Settings | File Templates.
   }
 
-  @Override
-  void hints(Hint[] hints) {
+  void setHints(Hint[] hints) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 

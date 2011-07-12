@@ -8,9 +8,9 @@ import org.sikora.ruler.Hint;
  * Time: 18:28
  */
 public interface Broker {
-  public void input(Input input);
+  public void setInput(Input input);
 
-//  public void hints(Hint[] hints);
+  public void setHints(Hint[] hints);
 
   public void addListener(BrokerListener listener);
 

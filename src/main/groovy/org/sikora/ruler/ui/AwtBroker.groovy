@@ -50,13 +50,13 @@ class AwtBroker implements KeyListener, Broker {
     listeners.remove(listener)
   }
 
-  void input(Input input) {
-    driver.input(input)
+  void setInput(Input input) {
+    driver.setInput(input)
     updateCacheAndPropagateChangeIfNeeded()
   }
 
-  void hints(Hint[] hints) {
-    driver.hints(hints)
+  void setHints(Hint[] hints) {
+    driver.setHints(hints)
     updateCacheAndPropagateChangeIfNeeded()
   }
 
