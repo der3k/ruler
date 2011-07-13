@@ -9,7 +9,7 @@ import org.sikora.ruler.model.input.Input;
  * Time: 12:16
  */
 
-public interface JRulerInputField {
+public interface AwtInputField {
   public Input input();
 
   public void setInput(Input input);

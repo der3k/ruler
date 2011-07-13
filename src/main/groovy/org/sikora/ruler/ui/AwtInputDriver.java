@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.rmi.activation.ActivationInstantiator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,17 +19,17 @@ import static java.awt.event.KeyEvent.*;
  * Time: 11:59
  */
 
-public class JRulerInputDriver implements KeyListener, InputDriver {
-  private static final Logger LOGGER = LoggerFactory.getLogger(JRulerInputDriver.class);
+public class AwtInputDriver implements KeyListener, InputDriver {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AwtInputDriver.class);
   private static final char COMPLETE_KEY_MIN = '1';
   private static final char COMPLETE_KEY_MAX = '9';
 
-  private final JRulerInputField field;
+  private final AwtInputField field;
   private Hints hints = Hints.NONE;
   private final List<Listener> listeners = new ArrayList<Listener>();
   private Input input = Input.EMPTY;
 
-  public JRulerInputDriver(final JRulerInputField field) {
+  public AwtInputDriver(final AwtInputField field) {
     this.field = field;
     field.setInput(input);
   }

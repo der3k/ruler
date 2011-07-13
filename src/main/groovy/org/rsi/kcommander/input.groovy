@@ -13,10 +13,11 @@ import org.sikora.ruler.model.input.Hints
 import org.sikora.ruler.model.input.Input
 import org.sikora.ruler.model.input.InputDriver
 import org.sikora.ruler.model.input.InputDriver.Update
-import org.sikora.ruler.ui.JRulerInputDriver
-import org.sikora.ruler.ui.JRulerInputField
+
 import org.slf4j.LoggerFactory
 import javax.swing.*
+import org.sikora.ruler.ui.AwtInputDriver
+import org.sikora.ruler.ui.AwtInputField
 
 class InputWindow extends JDialog {
   def hookListener
@@ -49,7 +50,7 @@ class InputWindow extends JDialog {
   }
 }
 
-class InputField extends JTextField implements JRulerInputField {
+class InputField extends JTextField implements AwtInputField {
   def logger = LoggerFactory.getLogger(InputField.class)
   def result
   def whisperer
@@ -63,7 +64,7 @@ class InputField extends JTextField implements JRulerInputField {
     this.hookListener = hookListener
     setFont(new Font('Candara', Font.PLAIN, 35))
     setFocusTraversalKeysEnabled(false)
-    def driver = new JRulerInputDriver(this)
+    def driver = new AwtInputDriver(this)
     def listener = new InputDriver.Listener() {
       void onChange(Update update) {
         switch (update.action()) {
