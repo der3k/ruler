@@ -9,19 +9,14 @@ import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-
+import org.sikora.ruler.model.input.Hints
+import org.sikora.ruler.model.input.Input
+import org.sikora.ruler.model.input.InputDriver
+import org.sikora.ruler.model.input.InputDriver.Update
+import org.sikora.ruler.ui.JRulerInputDriver
+import org.sikora.ruler.ui.JRulerInputField
 import org.slf4j.LoggerFactory
 import javax.swing.*
-
-import org.sikora.ruler.ui.AwtBroker
-import org.sikora.ruler.model.input.InputDriver
-import org.sikora.ruler.model.input.Input
-import org.sikora.ruler.Hint
-import org.sikora.ruler.model.input.BrokerListener
-import org.sikora.ruler.model.input.Broker.UpdateEvent
-import org.sikora.ruler.model.input.Broker.CompleteEvent
-import org.sikora.ruler.model.input.Broker.CancelEvent
-import org.sikora.ruler.model.input.Broker.SubmitEvent
 
 class InputWindow extends JDialog {
   def hookListener
@@ -39,7 +34,7 @@ class InputWindow extends JDialog {
     setSize(800, 50)
     setLocation(0, 0)
     getContentPane().setBackground(Color.BLACK)
-    input = new InputFieldOld(this, hookListener)
+    input = new InputField(this, hookListener)
     input.setBackground(Color.BLACK)
     input.setForeground(Color.YELLOW)
     input.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4))
@@ -54,67 +49,62 @@ class InputWindow extends JDialog {
   }
 }
 
-class InputFieldOld extends JTextField implements InputDriver {
-  def logger = LoggerFactory.getLogger(InputFieldOld.class)
+class InputField extends JTextField implements JRulerInputField {
+  def logger = LoggerFactory.getLogger(InputField.class)
   def result
   def whisperer
   def hookListener
   def static final List<Integer> ACTION_KEYS = [KeyEvent.VK_ESCAPE, KeyEvent.VK_TAB, KeyEvent.VK_ENTER]
-  AwtBroker broker
   def input
 
-  InputFieldOld(input, hookListener) {
+  InputField(input, hookListener) {
     super("")
     this.input = input
     this.hookListener = hookListener
     setFont(new Font('Candara', Font.PLAIN, 35))
     setFocusTraversalKeysEnabled(false)
-    broker = new AwtBroker(this)
-    def listener = new BrokerListener() {
-      @Override
-      void onChange(UpdateEvent updateEvent) {
-        if (whisperer == null) {
-          whisperer = new WhispererWindow()
-          whisperer.setLocation(0, 50)
-          whisperer.setSize(600, 355)
+    def driver = new JRulerInputDriver(this)
+    def listener = new InputDriver.Listener() {
+      void onChange(Update update) {
+        switch (update.action()) {
+          case InputDriver.Action.UPDATE:
+            if (whisperer == null) {
+              whisperer = new WhispererWindow()
+              whisperer.setLocation(0, 50)
+              whisperer.setSize(600, 355)
+            }
+            if (!getText().isEmpty()) {
+              fillWhisperer(whisperer.text, getText())
+              whisperer.show()
+            } else {
+              whisperer.hide()
+            }
+            break
+          case InputDriver.Action.COMPLETE:
+            def delta = update.inputUpdate()
+            def text = delta.newValue().text() + delta.hint()
+            setInput(Input.of(text))
+            break
+          case InputDriver.Action.SUBMIT:
+            def command = update.inputUpdate().newValue().text()
+            setInput(Input.EMPTY)
+            input.hide()
+            whisperer.hide()
+            if ('now' == command)
+              command = new Date().format('hh:mm dd.MM.yyyy')
+            result = new ResultWindow(command)
+            hookListener.result = result
+            result.show()
+            break
+          case InputDriver.Action.CANCEL:
+            System.exit(1)
+            break
         }
-
-        if (!getText().isEmpty()) {
-          fillWhisperer(whisperer.text, getText())
-          whisperer.show()
-        } else {
-          whisperer.hide()
-        }
-      }
-
-      @Override
-      void onComplete(CompleteEvent completeEvent) {
-        def text = completeEvent.context().input().text() + "COMPLTED "
-        completeEvent.context().broker().setInput(Input.of(text))
-      }
-
-      @Override
-      void onCancel(CancelEvent cancelEvent) {
-        System.exit(1)
-      }
-
-      @Override
-      void onSubmit(SubmitEvent submitEvent) {
-        def command = submitEvent.context().input().text()
-        submitEvent.context().broker().setInput(Input.EMPTY)
-        input.hide()
-        whisperer.hide()
-        if ('now' == command)
-          command = new Date().format('hh:mm dd.MM.yyyy')
-        result = new ResultWindow(command)
-        hookListener.result = result
-        result.show()
       }
 
     }
-
-    broker.addListener(listener)
-    addKeyListener(broker)
+    driver.addListener(listener)
+    addKeyListener(driver)
   }
 
   @Override
@@ -128,11 +118,8 @@ class InputFieldOld extends JTextField implements InputDriver {
     setCaretPosition(input.marker())
   }
 
-  Hint[] hints() {
-    new Hint[0]  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  void setHints(Hint[] hints) {
+  @Override
+  void setHints(Hints hints) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 

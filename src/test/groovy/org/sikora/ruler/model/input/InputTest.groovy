@@ -59,7 +59,7 @@ public class InputTest extends Specification {
     expect:
     update.oldValue() == Input.of('a')
     update.newValue() == Input.of('ab')
-    update.toString() == 'a| => ab|'
+    update.toString() =="'a|' => 'ab|' << '?'"
   }
 
   def 'new input value of update cannot be null'() {

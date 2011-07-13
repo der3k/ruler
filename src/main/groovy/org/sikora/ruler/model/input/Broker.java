@@ -1,7 +1,5 @@
 package org.sikora.ruler.model.input;
 
-import org.sikora.ruler.Hint;
-
 /**
  * User: der3k
  * Date: 11.7.11
@@ -10,7 +8,7 @@ import org.sikora.ruler.Hint;
 public interface Broker {
   public void setInput(Input input);
 
-  public void setHints(Hint[] hints);
+  public void setHints(Hints hints);
 
   public void addListener(BrokerListener listener);
 
@@ -42,26 +40,26 @@ public interface Broker {
   }
 
   public class CompleteEvent extends Event {
-    private final Hint hint;
+    private final Hints.Item hint;
 
-    public CompleteEvent(final Context context, final Hint hint) {
+    public CompleteEvent(final Context context, final Hints.Item hint) {
       super(context);
       this.hint = hint;
     }
 
-    public Hint hint() {
+    public Hints.Item hint() {
       return hint;
     }
   }
 
-  public class SubmitEvent extends Event{
+  public class SubmitEvent extends Event {
 
     public SubmitEvent(final Context context) {
       super(context);
     }
   }
 
-  public class CancelEvent extends Event{
+  public class CancelEvent extends Event {
 
     public CancelEvent(final Context context) {
       super(context);

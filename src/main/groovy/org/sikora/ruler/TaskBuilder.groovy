@@ -1,5 +1,7 @@
 package org.sikora.ruler
 
+import org.sikora.ruler.model.input.Hints
+
 /**
  * User: der3k
  * Date: 9.7.11
@@ -14,6 +16,6 @@ public interface TaskBuilder {
 
   void refresh(Draft blueprint)
 
-  Hint[] hints()
+  Hints hints()
 
 }

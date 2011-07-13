@@ -1,7 +1,5 @@
 package org.sikora.ruler.model.input;
 
-import org.sikora.ruler.Hint;
-
 /**
  * User: sikorric
  * Date: 12.7.11
@@ -11,9 +9,9 @@ import org.sikora.ruler.Hint;
 public class Context {
   private final Broker broker;
   private final Input input;
-  private final Hint[] hints;
+  private final Hints hints;
 
-  public Context(final Broker broker, final Input input, final Hint[] hints) {
+  public Context(final Broker broker, final Input input, final Hints hints) {
     this.broker = broker;
     this.input = input;
     this.hints = hints;
@@ -27,7 +25,7 @@ public class Context {
     return input;
   }
 
-  public Hint[] hints() {
+  public Hints hints() {
     return hints;
   }
 }

@@ -2,7 +2,6 @@ package org.sikora.ruler.ui
 
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
-import org.sikora.ruler.Hint
 import org.sikora.ruler.model.input.Broker
 import org.sikora.ruler.model.input.BrokerListener
 import org.sikora.ruler.model.input.Context
@@ -10,6 +9,7 @@ import org.sikora.ruler.model.input.Input
 import org.slf4j.LoggerFactory
 import static java.awt.event.KeyEvent.*
 import org.sikora.ruler.model.input.InputDriver
+import org.sikora.ruler.model.input.Hints
 
 /**
  * User: der3k
@@ -33,6 +33,7 @@ class AwtBroker implements KeyListener, Broker {
   final InputDriver driver
   final InputDriverCache cache
   final List<BrokerListener> listeners = []
+  Hints hints = Hints.NONE
 
   AwtBroker(final InputDriver driver) {
     this.driver = driver
@@ -56,7 +57,7 @@ class AwtBroker implements KeyListener, Broker {
     updateCacheAndPropagateChangeIfNeeded()
   }
 
-  void setHints(Hint[] hints) {
+  void setHints(Hints hints) {
     driver.setHints(hints)
     updateCacheAndPropagateChangeIfNeeded()
   }
@@ -109,9 +110,9 @@ class AwtBroker implements KeyListener, Broker {
     }
   }
 
-  Hint hintFromKey(final int key) {
-    def i = hintIndexFromKey(key)
-    i < cache.hints().length ? cache.hints[i] : Hint.NONE
+  Hints.Item hintFromKey(final int key) {
+    hints.select(hintIndexFromKey(key))
+    hints.selected()
   }
 
   int hintIndexFromKey(final int key) {
@@ -135,7 +136,6 @@ class AwtBroker implements KeyListener, Broker {
   class InputDriverCache {
     final InputDriver driver
     Input input = Input.EMPTY
-    Hint[] hints
     Input.Update update
 
     InputDriverCache(final InputDriver driver) {
@@ -147,10 +147,6 @@ class AwtBroker implements KeyListener, Broker {
       input
     }
 
-    Hint[] hints() {
-      hints
-    }
-
     Input.Update lastUpdate() {
       update
     }
@@ -159,7 +155,6 @@ class AwtBroker implements KeyListener, Broker {
       update = input.updateTo(driver.input())
       if (!update.isVoid())
         input = update.newValue()
-      hints = driver.hints()
       update
     }
 
