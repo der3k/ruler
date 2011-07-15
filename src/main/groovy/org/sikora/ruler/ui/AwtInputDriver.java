@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.awt.event.KeyEvent.*;
+import static org.sikora.ruler.model.input.InputDriver.Command.*;
 
 /**
  * User: sikorric
@@ -34,16 +35,21 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     field.setInput(input);
   }
 
-  public void setInput(final Input input) {
+  public void set(final Input input) {
     field.setInput(input);
     Input.Update update = this.input.updateTo(input);
-    propagateInputUpdate(update, Action.UPDATE);
+    propagateInputUpdate(update);
   }
 
-  public void setHints(Hints hints) {
+  public void set(final Hints hints) {
     this.hints = hints;
     field.setHints(hints);
-    dispatchAction(Action.HINTS_UPDATE);
+    dispatchEventFor(UPDATE_HINTS);
+  }
+
+  public void set(final Command command) {
+    // TODO propagate some commands onto field
+    dispatchEventFor(command);
   }
 
   public void addListener(final Listener listener) {
@@ -63,18 +69,13 @@ public class AwtInputDriver implements KeyListener, InputDriver {
       event.consume();
   }
 
-  private boolean isCompleteKey(final char key) {
-    return COMPLETE_KEY_MIN <= key && key <= COMPLETE_KEY_MAX;
-  }
-
   public void keyPressed(final KeyEvent event) {
     int key = event.getKeyCode();
     String keyText = KeyEvent.getKeyText(key);
     LOGGER.trace("Key pressed: '{}'", keyText);
     switch (key) {
       case VK_ESCAPE:
-        event.consume();
-        dispatchAction(Action.CANCEL);
+        consumeKeyEventAndDispatchCommand(event, CANCEL);
         break;
       case VK_TAB:
       case VK_1:
@@ -86,21 +87,47 @@ public class AwtInputDriver implements KeyListener, InputDriver {
       case VK_7:
       case VK_8:
       case VK_9:
-        event.consume();
         hints.select(hintIndexFromKey(key));
-        dispatchAction(Action.COMPLETE);
+        consumeKeyEventAndDispatchCommand(event, COMPLETE_INPUT);
         break;
       case VK_ENTER:
-        event.consume();
-        dispatchAction(Action.SUBMIT);
+        consumeKeyEventAndDispatchCommand(event, SUBMIT_INPUT);
         break;
     }
   }
 
-  private void dispatchAction(final Action action) {
-    Input.Update inputUpdate = input.updateTo(input, hints.selected());
-    Update update = new Update(inputUpdate, action);
-    dispatchUpdate(update);
+  public void keyReleased(KeyEvent event) {
+    Input.Update update = input.updateTo(field.input());
+    propagateInputUpdate(update);
+  }
+
+  private void consumeKeyEventAndDispatchCommand(final KeyEvent event, final Command command) {
+    event.consume();
+    dispatchEventFor(command);
+  }
+
+  private void dispatchEventFor(final Command command) {
+    final Event event = eventFor(command);
+    LOGGER.debug("Dispatching {}", event);
+    for (Listener listener : listeners)
+      listener.dispatch(event);
+  }
+
+  private void propagateInputUpdate(Input.Update update) {
+    if (update.isNotVoid()) {
+      LOGGER.trace("Input changed: {}", update);
+      input = update.newValue();
+      dispatchEventFor(UPDATE_INPUT);
+    }
+  }
+
+  private Event eventFor(Command command) {
+    final InputCommand inputCommand = new InputCommand(command, input, hints.selected());
+    return new Event(this, inputCommand);
+  }
+
+  private boolean isCompleteKey(final char key) {
+    return COMPLETE_KEY_MIN <= key && key <= COMPLETE_KEY_MAX;
   }
 
   private int hintIndexFromKey(final int key) {
@@ -111,26 +138,4 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     throw new IllegalArgumentException("unsupported complete key: " + getKeyText(key));
   }
 
-  public void keyReleased(KeyEvent event) {
-    refreshFieldInputAndPropagate();
-  }
-
-  private void propagateInputUpdate(Input.Update update, Action action) {
-    if (update.isNotVoid()) {
-      LOGGER.trace("Input changed: {}", update);
-      input = update.newValue();
-      dispatchUpdate(new Update(update, action));
-    }
-  }
-
-  private void dispatchUpdate(Update update) {
-    LOGGER.debug("Dispatching onChange({})", update);
-    for (Listener listener : listeners)
-      listener.onChange(update);
-  }
-
-  private void refreshFieldInputAndPropagate() {
-    Input.Update update = input.updateTo(field.input());
-    propagateInputUpdate(update, Action.UPDATE);
-  }
 }

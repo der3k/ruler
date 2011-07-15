@@ -53,12 +53,12 @@ class AwtBroker implements KeyListener, Broker {
   }
 
   void setInput(Input input) {
-    driver.setInput(input)
+    driver.set(input)
     updateCacheAndPropagateChangeIfNeeded()
   }
 
   void setHints(Hints hints) {
-    driver.setHints(hints)
+    driver.set(hints)
     updateCacheAndPropagateChangeIfNeeded()
   }
 
@@ -127,7 +127,7 @@ class AwtBroker implements KeyListener, Broker {
     cache.update()
     if (cache.lastUpdate().isNotVoid()) {
       logger.trace('Input changed {}', cache.lastUpdate())
-      logger.debug('Calling onChange() on all listeners')
+      logger.debug('Calling dispatch() on all listeners')
       def event = new Broker.UpdateEvent(context(), cache.lastUpdate())
       listeners*.onChange(event)
     }

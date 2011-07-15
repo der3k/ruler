@@ -7,43 +7,82 @@ package org.sikora.ruler.model.input;
  */
 
 public interface InputDriver {
-  public void setInput(Input input);
+  public void set(Input input);
 
-  public void setHints(Hints hints);
+  public void set(Hints hints);
+
+  public void set(Command command);
 
   public void addListener(Listener listener);
 
   public void removeListener(Listener listener);
 
-  public class Update {
-    private final Input.Update inputUpdate;
-    private final Action action;
+  public class Event {
+    private final InputDriver driver;
+    private final InputCommand command;
 
-    public Update(Input.Update inputUpdate, Action action) {
-      this.inputUpdate = inputUpdate;
-      this.action = action;
+    public Event(final InputDriver driver, final InputCommand command) {
+      this.driver = driver;
+      this.command = command;
     }
 
-    public Input.Update inputUpdate() {
-      return inputUpdate;
+    public InputDriver driver() {
+      return driver;
     }
 
-    public Action action() {
-      return action;
+    public Command command() {
+      return command.command();
+    }
+
+    public Input input() {
+      return command.input();
+    }
+
+    public Hints.Item hint() {
+      return command.hint();
     }
 
     @Override
     public String toString() {
-      return String.format("InputDriver.Update{%s, %s}", inputUpdate, action);
+      return String.format("Event{%s}", command);
     }
   }
 
-  public enum Action {
-    RESET, UPDATE, HINTS_UPDATE, CANCEL, COMPLETE, SUBMIT
+  public class InputCommand {
+    private final Command command;
+    private final Input input;
+    private final Hints.Item hint;
+
+    public InputCommand(final Command command, final Input input, final Hints.Item hint) {
+      this.command = command;
+      this.input = input;
+      this.hint = hint;
+    }
+
+    public Command command() {
+      return command;
+    }
+
+    public Input input() {
+      return input;
+    }
+
+    public Hints.Item hint() {
+      return hint;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("%s['%s' << '%s']", command, input, hint);
+    }
+  }
+
+  public enum Command {
+    RESET_INPUT, UPDATE_INPUT, UPDATE_HINTS, CANCEL, COMPLETE_INPUT, SUBMIT_INPUT
   }
 
   public interface Listener {
-    void onChange(Update update);
+    void dispatch(Event event);
   }
 
 }

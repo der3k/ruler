@@ -12,12 +12,12 @@ import java.awt.event.WindowEvent
 import org.sikora.ruler.model.input.Hints
 import org.sikora.ruler.model.input.Input
 import org.sikora.ruler.model.input.InputDriver
-import org.sikora.ruler.model.input.InputDriver.Update
 
 import org.slf4j.LoggerFactory
 import javax.swing.*
 import org.sikora.ruler.ui.AwtInputDriver
 import org.sikora.ruler.ui.AwtInputField
+import org.sikora.ruler.model.input.InputDriver.Event
 
 class InputWindow extends JDialog {
   def hookListener
@@ -66,9 +66,9 @@ class InputField extends JTextField implements AwtInputField {
     setFocusTraversalKeysEnabled(false)
     def driver = new AwtInputDriver(this)
     def listener = new InputDriver.Listener() {
-      void onChange(Update update) {
-        switch (update.action()) {
-          case InputDriver.Action.UPDATE:
+      void dispatch(Event event) {
+        switch (event.command()) {
+          case InputDriver.Command.UPDATE_INPUT:
             if (whisperer == null) {
               whisperer = new WhispererWindow()
               whisperer.setLocation(0, 50)
@@ -81,14 +81,13 @@ class InputField extends JTextField implements AwtInputField {
               whisperer.hide()
             }
             break
-          case InputDriver.Action.COMPLETE:
-            def delta = update.inputUpdate()
-            def text = delta.newValue().text() + delta.hint()
-            setInput(Input.of(text))
+          case InputDriver.Command.COMPLETE_INPUT:
+            def text = event.input().text() + event.hint()
+            event.driver().set(Input.of(text))
             break
-          case InputDriver.Action.SUBMIT:
-            def command = update.inputUpdate().newValue().text()
-            setInput(Input.EMPTY)
+          case InputDriver.Command.SUBMIT_INPUT:
+            def command = event.input().text()
+            event.driver().set(Input.EMPTY)
             input.hide()
             whisperer.hide()
             if ('now' == command)
@@ -97,7 +96,7 @@ class InputField extends JTextField implements AwtInputField {
             hookListener.result = result
             result.show()
             break
-          case InputDriver.Action.CANCEL:
+          case InputDriver.Command.CANCEL:
             System.exit(1)
             break
         }

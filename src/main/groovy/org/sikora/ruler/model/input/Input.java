@@ -30,12 +30,8 @@ public final class Input {
     this.marker = marker;
   }
 
-  public Update updateTo(final Input value, Hints.Item hint) {
-    return new Update(value, hint);
-  }
-
   public Update updateTo(final Input value) {
-    return new Update(value, Hints.Item.NONE);
+    return new Update(value);
   }
 
 
@@ -76,15 +72,11 @@ public final class Input {
 
   public class Update {
     private final Input value;
-    private final Hints.Item hint;
 
-    private Update(final Input value, Hints.Item hint) {
+    private Update(final Input value) {
       if (value == null)
         throw new IllegalArgumentException("new input value cannot be null");
-      if (hint == null)
-        throw new IllegalArgumentException("hint cannot be null");
       this.value = value;
-      this.hint = hint;
     }
 
     public Input oldValue() {
@@ -93,10 +85,6 @@ public final class Input {
 
     public Input newValue() {
       return value;
-    }
-
-    public Hints.Item hint() {
-      return hint;
     }
 
     public boolean isVoid() {
@@ -109,7 +97,7 @@ public final class Input {
 
     @Override
     public String toString() {
-      return String.format("'%s' => '%s' << '%s'", oldValue(), newValue(), hint);
+      return String.format("'%s' => '%s'", oldValue(), newValue());
     }
   }
 
