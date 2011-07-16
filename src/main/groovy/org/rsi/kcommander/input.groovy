@@ -53,7 +53,8 @@ class InputField extends JTextField implements org.sikora.ruler.model.input.Inpu
             event.driver().set(hints)
             break
           case InputDriver.Command.COMPLETE_INPUT:
-            event.driver().set(Input.of(text + event.hint()))
+            if (event.hint() != Hints.Item.NONE)
+              event.driver().set(Input.of(text + event.hint()))
             break
           case InputDriver.Command.SUBMIT_INPUT:
             if ('now' == text) {
