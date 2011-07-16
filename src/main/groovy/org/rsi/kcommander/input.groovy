@@ -2,101 +2,68 @@ package org.rsi.kcommander
 
 import com.melloware.jintellitype.HotkeyListener
 import com.melloware.jintellitype.JIntellitype
-import com.sun.awt.AWTUtilities
-import java.awt.Color
-import java.awt.Font
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
+import javax.swing.JDialog
+import javax.swing.JTextArea
+import javax.swing.JTextField
+import javax.swing.JWindow
 import org.sikora.ruler.model.input.Hints
 import org.sikora.ruler.model.input.Input
 import org.sikora.ruler.model.input.InputDriver
-
-import org.slf4j.LoggerFactory
-import javax.swing.*
-import org.sikora.ruler.ui.AwtInputDriver
-
 import org.sikora.ruler.model.input.InputDriver.Event
+import org.sikora.ruler.ui.AwtInputDriver
+import org.sikora.ruler.ui.AwtInputField
 
 class InputWindow extends JDialog {
-  def hookListener
   def input
 
   InputWindow(hookListener) {
-    this.hookListener = hookListener
-    addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent event) {
-        JIntellitype.getInstance().cleanUp()
-        System.exit(1)
-      }
-    })
-    setUndecorated(true)
-    setSize(800, 50)
-    setLocation(0, 0)
-    getContentPane().setBackground(Color.BLACK)
+    AwtInputField.setLocationAndSize(this, 0, 0, 800, 50)
+    AwtInputField.makeWindowOpaque(this)
     input = new InputField(this, hookListener)
-    input.setBackground(Color.BLACK)
-    input.setForeground(Color.YELLOW)
-    input.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4))
+    input.setFocusTraversalKeysEnabled(false)
+    AwtInputField.setFontAndColor(input, 35)
+    AwtInputField.setEmptyBorder(input, 4)
     add(input)
-    AWTUtilities.setWindowOpacity(this, 0.85f)
-//    show()
   }
 
   void reset() {
-//    input.listener.reset()
     input.setText('')
   }
 }
 
 class InputField extends JTextField implements org.sikora.ruler.model.input.InputField {
-  def logger = LoggerFactory.getLogger(InputField.class)
-  def result
-  def whisperer
-  def hookListener
-  def static final List<Integer> ACTION_KEYS = [KeyEvent.VK_ESCAPE, KeyEvent.VK_TAB, KeyEvent.VK_ENTER]
-  def input
+  def whisperer = new WhispererWindow()
 
   InputField(input, hookListener) {
     super("")
-    this.input = input
-    this.hookListener = hookListener
-    setFont(new Font('Candara', Font.PLAIN, 35))
-    setFocusTraversalKeysEnabled(false)
     def driver = new AwtInputDriver(this)
     def listener = new InputDriver.Listener() {
       void dispatch(Event event) {
+        final String text = event.input().text()
         switch (event.command()) {
           case InputDriver.Command.UPDATE_INPUT:
-            if (whisperer == null) {
-              whisperer = new WhispererWindow()
-              whisperer.setLocation(0, 50)
-              whisperer.setSize(600, 355)
-            }
-            if (!getText().isEmpty()) {
-              fillWhisperer(whisperer.text, getText())
-              whisperer.show()
-            } else {
+            if (text.isEmpty()) {
               whisperer.hide()
+            } else {
+              fillWhisperer(whisperer.text, text)
+              whisperer.show()
             }
             break
           case InputDriver.Command.COMPLETE_INPUT:
-            def text = event.input().text() + event.hint()
-            event.driver().set(Input.of(text))
+            event.driver().set(Input.of(text + event.hint()))
             break
           case InputDriver.Command.SUBMIT_INPUT:
-            def command = event.input().text()
-            event.driver().set(Input.EMPTY)
-            input.hide()
-            whisperer.hide()
-            if ('now' == command)
-              command = new Date().format('hh:mm dd.MM.yyyy')
-            result = new ResultWindow(command)
-            hookListener.result = result
-            result.show()
+            if ('now' == text) {
+              event.driver().set(Input.EMPTY)
+              input.hide()
+              String now = new Date().format('hh:mm dd.MM.yyyy')
+              hookListener.result = new ResultWindow(now)
+            }
             break
           case InputDriver.Command.CANCEL:
+            JIntellitype.getInstance().cleanUp()
             System.exit(1)
             break
         }
@@ -137,19 +104,11 @@ class WhispererWindow extends JWindow {
   def text
 
   WhispererWindow(content) {
-    addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent event) {
-        System.exit(1)
-      }
-    })
-    setSize(600, 300)
-    getContentPane().setBackground(Color.BLACK)
-    AWTUtilities.setWindowOpacity(this, 0.85f)
+    AwtInputField.setLocationAndSize(this, 0, 50, 600, 355)
+    AwtInputField.makeWindowOpaque(this)
     text = new JTextArea(content, 5, 40)
-    text.setBackground(Color.BLACK)
-    text.setForeground(Color.YELLOW)
-    text.setFont(new Font('Candara', Font.PLAIN, 30))
-    text.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10))
+    AwtInputField.setFontAndColor(text, 30)
+    AwtInputField.setEmptyBorder(text, 10)
     add(text)
   }
 }
@@ -158,21 +117,13 @@ class ResultWindow extends JDialog {
   def text
 
   ResultWindow(content) {
-    addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent event) {
-        System.exit(1)
-      }
-    })
-    setUndecorated(true)
     setSize(600, 300)
     setLocationRelativeTo(null)
     setAlwaysOnTop(true)
-    getContentPane().setBackground(Color.BLACK)
+    AwtInputField.makeWindowOpaque(this)
     text = new JTextArea(content, 5, 40)
-    text.setBackground(Color.BLACK)
-    text.setForeground(Color.YELLOW)
-    text.setFont(new Font('Candara', Font.PLAIN, 30))
-    text.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10))
+    AwtInputField.setFontAndColor(text, 30)
+    AwtInputField.setEmptyBorder(text, 10)
     text.setEditable(false)
     text.addKeyListener(new KeyAdapter() {
       @Override
@@ -181,7 +132,7 @@ class ResultWindow extends JDialog {
       }
     })
     add(text)
-    AWTUtilities.setWindowOpacity(this, 0.85f)
+    show()
   }
 }
 
@@ -213,3 +164,4 @@ def input = new InputWindow(hookListener)
 hookListener.input = input
 hook.addHotKeyListener(hookListener)
 hook.registerHotKey(1, JIntellitype.MOD_CONTROL, (int) ' ')
+hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ')
