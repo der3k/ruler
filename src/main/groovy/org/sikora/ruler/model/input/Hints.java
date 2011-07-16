@@ -41,6 +41,10 @@ public class Hints {
     return items.toArray(new Item[items.size()]);
   }
 
+  public int size() {
+    return items.size();
+  }
+
   public static class Item {
     private final String text;
 

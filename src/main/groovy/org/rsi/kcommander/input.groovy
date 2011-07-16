@@ -34,6 +34,7 @@ class InputWindow extends JDialog {
 }
 
 class InputField extends JTextField implements org.sikora.ruler.model.input.InputField {
+  static def Random RANDOM = new Random()
   def whisperer = new WhispererWindow()
 
   InputField(input, hookListener) {
@@ -44,7 +45,12 @@ class InputField extends JTextField implements org.sikora.ruler.model.input.Inpu
         final String text = event.input().text()
         switch (event.command()) {
           case InputDriver.Command.UPDATE_INPUT:
-            whisperer.setHints(text)
+            Hints hints = Hints.NONE
+            if (!text.isEmpty()) {
+              def items = (1..RANDOM.nextInt(10)).collect {new Hints.Item("$text:$it")}
+              hints = new Hints(items)
+            }
+            event.driver().set(hints)
             break
           case InputDriver.Command.COMPLETE_INPUT:
             event.driver().set(Input.of(text + event.hint()))
@@ -82,7 +88,7 @@ class InputField extends JTextField implements org.sikora.ruler.model.input.Inpu
 
   @Override
   void set(Hints hints) {
-    //To change body of implemented methods use File | Settings | File Templates.
+    whisperer.setHints(hints)
   }
 }
 
@@ -98,23 +104,23 @@ class WhispererWindow extends JWindow {
     add(text)
   }
 
-  void setHints(String text) {
-    if (text.isEmpty()) {
+  void setHints(Hints hints) {
+    if (hints.size() == 0) {
       hide()
     } else {
-      populateHints(text)
+      populateHints(hints)
       show()
     }
   }
 
-  def populateHints(String text) {
+  def populateHints(Hints hints) {
+    def size = [9, hints.size()].min()
+    def items = hints.items()
     def content = new StringBuilder()
-    (1..9).each {
-      content.append("$it - $text\n")
-    }
+    (1..size).each { content << "$it - ${items[it - 1]}\n"}
     this.text.setText(content.toString())
+    setSize(600, size * 40)
   }
-
 }
 
 class ResultWindow extends JDialog {
