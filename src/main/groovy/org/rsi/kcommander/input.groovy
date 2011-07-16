@@ -16,7 +16,7 @@ import org.sikora.ruler.model.input.InputDriver
 import org.slf4j.LoggerFactory
 import javax.swing.*
 import org.sikora.ruler.ui.AwtInputDriver
-import org.sikora.ruler.ui.AwtInputField
+
 import org.sikora.ruler.model.input.InputDriver.Event
 
 class InputWindow extends JDialog {
@@ -50,7 +50,7 @@ class InputWindow extends JDialog {
   }
 }
 
-class InputField extends JTextField implements AwtInputField {
+class InputField extends JTextField implements org.sikora.ruler.model.input.InputField {
   def logger = LoggerFactory.getLogger(InputField.class)
   def result
   def whisperer
@@ -113,13 +113,13 @@ class InputField extends JTextField implements AwtInputField {
   }
 
   @Override
-  void setInput(Input input) {
+  void set(Input input) {
     setText(input.text())
     setCaretPosition(input.marker())
   }
 
   @Override
-  void setHints(Hints hints) {
+  void set(Hints hints) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 

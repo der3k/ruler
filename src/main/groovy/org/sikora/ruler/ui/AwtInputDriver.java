@@ -3,6 +3,7 @@ package org.sikora.ruler.ui;
 import org.sikora.ruler.model.input.Hints;
 import org.sikora.ruler.model.input.Input;
 import org.sikora.ruler.model.input.InputDriver;
+import org.sikora.ruler.model.input.InputField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,25 +26,25 @@ public class AwtInputDriver implements KeyListener, InputDriver {
   private static final char COMPLETE_KEY_MIN = '1';
   private static final char COMPLETE_KEY_MAX = '9';
 
-  private final AwtInputField field;
+  private final InputField field;
   private Hints hints = Hints.NONE;
   private final List<Listener> listeners = new ArrayList<Listener>();
   private Input input = Input.EMPTY;
 
-  public AwtInputDriver(final AwtInputField field) {
+  public AwtInputDriver(final InputField field) {
     this.field = field;
-    field.setInput(input);
+    field.set(input);
   }
 
   public void set(final Input input) {
-    field.setInput(input);
+    field.set(input);
     Input.Update update = this.input.updateTo(input);
     propagateInputUpdate(update);
   }
 
   public void set(final Hints hints) {
     this.hints = hints;
-    field.setHints(hints);
+    field.set(hints);
     dispatchEventFor(UPDATE_HINTS);
   }
 
