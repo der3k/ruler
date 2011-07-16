@@ -1,6 +1,9 @@
 package org.sikora.ruler.model.input;
 
+import javax.swing.event.ListSelectionEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,8 +37,8 @@ public class Hints {
     return selected;
   }
 
-  public int size() {
-    return items.size();
+  public Item[] items() {
+    return items.toArray(new Item[items.size()]);
   }
 
   public static class Item {

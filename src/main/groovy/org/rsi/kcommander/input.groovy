@@ -44,12 +44,7 @@ class InputField extends JTextField implements org.sikora.ruler.model.input.Inpu
         final String text = event.input().text()
         switch (event.command()) {
           case InputDriver.Command.UPDATE_INPUT:
-            if (text.isEmpty()) {
-              whisperer.hide()
-            } else {
-              fillWhisperer(whisperer.text, text)
-              whisperer.show()
-            }
+            whisperer.setHints(text)
             break
           case InputDriver.Command.COMPLETE_INPUT:
             event.driver().set(Input.of(text + event.hint()))
@@ -89,28 +84,37 @@ class InputField extends JTextField implements org.sikora.ruler.model.input.Inpu
   void set(Hints hints) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
-
-  def fillWhisperer(JTextArea whisperer, text) {
-    def content = new StringBuilder()
-    (1..9).each {
-      content.append("$it - $text\n")
-    }
-    whisperer.setText(content.toString())
-  }
-
 }
 
 class WhispererWindow extends JWindow {
   def text
 
-  WhispererWindow(content) {
+  WhispererWindow() {
     AwtInputField.setLocationAndSize(this, 0, 50, 600, 355)
     AwtInputField.makeWindowOpaque(this)
-    text = new JTextArea(content, 5, 40)
+    text = new JTextArea(null, 5, 40)
     AwtInputField.setFontAndColor(text, 30)
     AwtInputField.setEmptyBorder(text, 10)
     add(text)
   }
+
+  void setHints(String text) {
+    if (text.isEmpty()) {
+      hide()
+    } else {
+      populateHints(text)
+      show()
+    }
+  }
+
+  def populateHints(String text) {
+    def content = new StringBuilder()
+    (1..9).each {
+      content.append("$it - $text\n")
+    }
+    this.text.setText(content.toString())
+  }
+
 }
 
 class ResultWindow extends JDialog {
