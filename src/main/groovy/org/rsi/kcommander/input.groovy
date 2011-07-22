@@ -10,53 +10,55 @@ import javax.swing.JTextField
 import javax.swing.JWindow
 import org.sikora.ruler.model.input.Hints
 import org.sikora.ruler.model.input.Input
+import org.sikora.ruler.model.input.InputField
 import org.sikora.ruler.ui.AwtInputDriver
 import org.sikora.ruler.ui.AwtInputField
 
-class InputWindow extends JDialog {
-  def input
+class InputWindow extends JDialog implements InputField {
+  final JTextField field = new JTextField()
+  final WhispererWindow whisperer = new WhispererWindow()
+  final HookHotKeyListener hookListener
 
   InputWindow(hookListener) {
+    this.hookListener = hookListener
     AwtInputField.setLocationAndSize(this, 0, 0, 800, 50)
     AwtInputField.makeWindowOpaque(this)
-    input = new InputField(this, hookListener)
-    input.setFocusTraversalKeysEnabled(false)
-    AwtInputField.setFontAndColor(input, 35)
-    AwtInputField.setEmptyBorder(input, 4)
-    add(input)
+    configureField()
+    add(field)
   }
 
-  void reset() {
-    input.setText('')
-  }
-}
-
-class InputField extends JTextField implements org.sikora.ruler.model.input.InputField {
-  def whisperer = new WhispererWindow()
-
-  InputField(input, hookListener) {
-    super("")
+  def configureField() {
+    field.setFocusTraversalKeysEnabled(false)
+    AwtInputField.setFontAndColor(field, 35)
+    AwtInputField.setEmptyBorder(field, 4)
     def driver = new AwtInputDriver(this)
-    def listener = new InputDriverListener(hookListener, input)
+    def listener = new InputDriverListener(hookListener)
     driver.addListener(listener)
-    addKeyListener(driver)
+    field.addKeyListener(driver)
   }
 
-  @Override
   Input input() {
-    Input.of(getText(), getCaretPosition())
+    Input.of(field.getText(), field.getCaretPosition())
   }
 
-  @Override
   void set(Input input) {
-    setText(input.text())
-    setCaretPosition(input.marker())
+    field.setText(input.text())
+    field.setCaretPosition(input.marker())
   }
 
-  @Override
   void set(Hints hints) {
     whisperer.setHints(hints)
   }
+
+  void focus() {
+    this.show()
+  }
+
+  void hide() {
+    whisperer.hide()
+    super.hide()
+  }
+
 }
 
 class WhispererWindow extends JWindow {
@@ -121,7 +123,6 @@ class HookHotKeyListener implements HotkeyListener {
   void onHotKey(int hookId) {
     switch (hookId) {
       case 1:
-        input?.reset()
         input?.show()
         result?.hide()
         break;

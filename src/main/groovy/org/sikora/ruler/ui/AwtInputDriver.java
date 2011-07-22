@@ -49,7 +49,18 @@ public class AwtInputDriver implements KeyListener, InputDriver {
   }
 
   public void set(final Command command) {
-    // TODO propagate some commands onto field
+    switch (command) {
+      case FOCUS_INPUT:
+        field.focus();
+        break;
+      case HIDE_INPUT:
+        field.hide();
+        break;
+      case RESET_INPUT:
+        field.set(Input.EMPTY);
+        field.hide();
+        break;
+    }
     dispatchEventFor(command);
   }
 

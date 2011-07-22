@@ -15,4 +15,8 @@ public interface InputField {
   public void set(Input input);
 
   public void set(Hints hints);
+
+  public void focus();
+
+  public void hide();
 }

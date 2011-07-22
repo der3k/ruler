@@ -78,7 +78,7 @@ public interface InputDriver {
   }
 
   public enum Command {
-    RESET_INPUT, UPDATE_INPUT, UPDATE_HINTS, CANCEL, COMPLETE_INPUT, SUBMIT_INPUT
+    RESET_INPUT, FOCUS_INPUT, UPDATE_INPUT, UPDATE_HINTS, CANCEL, COMPLETE_INPUT, SUBMIT_INPUT, HIDE_INPUT
   }
 
   public interface Listener {

@@ -42,6 +42,14 @@ class AwtInputField implements InputField {
 
   }
 
+  void focus() {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  void hide() {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
+
   class FieldWindow extends JDialog {
     JTextField text;
 
