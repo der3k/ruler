@@ -10,8 +10,6 @@ import javax.swing.JTextField
 import javax.swing.JWindow
 import org.sikora.ruler.model.input.Hints
 import org.sikora.ruler.model.input.Input
-import org.sikora.ruler.model.input.InputDriver
-import org.sikora.ruler.model.input.InputDriver.Event
 import org.sikora.ruler.ui.AwtInputDriver
 import org.sikora.ruler.ui.AwtInputField
 
