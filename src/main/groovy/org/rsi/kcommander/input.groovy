@@ -34,44 +34,12 @@ class InputWindow extends JDialog {
 }
 
 class InputField extends JTextField implements org.sikora.ruler.model.input.InputField {
-  static def Random RANDOM = new Random()
   def whisperer = new WhispererWindow()
 
   InputField(input, hookListener) {
     super("")
     def driver = new AwtInputDriver(this)
-    def listener = new InputDriver.Listener() {
-      void dispatch(Event event) {
-        final String text = event.input().text()
-        switch (event.command()) {
-          case InputDriver.Command.UPDATE_INPUT:
-            Hints hints = Hints.NONE
-            if (!text.isEmpty()) {
-              def items = (1..RANDOM.nextInt(10)).collect {new Hints.Item("$text:$it")}
-              hints = new Hints(items)
-            }
-            event.driver().set(hints)
-            break
-          case InputDriver.Command.COMPLETE_INPUT:
-            if (event.hint() != Hints.Item.NONE)
-              event.driver().set(Input.of(text + event.hint()))
-            break
-          case InputDriver.Command.SUBMIT_INPUT:
-            if ('now' == text) {
-              event.driver().set(Input.EMPTY)
-              input.hide()
-              String now = new Date().format('hh:mm dd.MM.yyyy')
-              hookListener.result = new ResultWindow(now)
-            }
-            break
-          case InputDriver.Command.CANCEL:
-            JIntellitype.getInstance().cleanUp()
-            System.exit(1)
-            break
-        }
-      }
-
-    }
+    def listener = new InputDriverListener(hookListener, input)
     driver.addListener(listener)
     addKeyListener(driver)
   }
