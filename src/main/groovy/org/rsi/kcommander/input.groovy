@@ -55,11 +55,12 @@ class HookHotKeyListener implements HotkeyListener {
 
 def input = new AwtInputWindow()
 def driver = new AwtInputDriver(input)
+input.addKeyListener(driver)
+
 def hookListener = new HookHotKeyListener()
-hookListener.input = input
 def driverListener = new InputDriverListener(hookListener)
 driver.addListener(driverListener)
-input.addKeyListener(driver)
+hookListener.input = input
 
 JIntellitype.setLibraryLocation('../lib/JIntellitype64.dll')
 def hook = JIntellitype.getInstance()
