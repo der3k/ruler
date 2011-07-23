@@ -57,7 +57,10 @@ public class AwtInputDriver implements KeyListener, InputDriver {
         field.hide();
         break;
       case RESET_INPUT:
-        field.set(Input.EMPTY);
+        input = Input.EMPTY;
+        hints = Hints.NONE;
+        field.set(input);
+        field.set(hints);
         field.hide();
         break;
     }
