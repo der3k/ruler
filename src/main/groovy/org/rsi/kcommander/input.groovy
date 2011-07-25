@@ -2,50 +2,23 @@ package org.rsi.kcommander
 
 import com.melloware.jintellitype.HotkeyListener
 import com.melloware.jintellitype.JIntellitype
-import java.awt.event.KeyAdapter
-import java.awt.event.KeyEvent
-import javax.swing.JDialog
-import javax.swing.JTextArea
+import org.sikora.ruler.model.input.InputField
 import org.sikora.ruler.ui.AwtInputDriver
 import org.sikora.ruler.ui.AwtInputWindow
-import org.sikora.ruler.ui.AwtUtil
-
-class ResultWindow extends JDialog {
-  def text
-
-  ResultWindow(content) {
-    setSize(600, 300)
-    setLocationRelativeTo(null)
-    setAlwaysOnTop(true)
-    AwtUtil.makeWindowOpaque(this)
-    text = new JTextArea(content, 5, 40)
-    AwtUtil.setFontAndColor(text, 30)
-    AwtUtil.setEmptyBorder(text, 10)
-    text.setEditable(false)
-    text.addKeyListener(new KeyAdapter() {
-      @Override
-      void keyPressed(KeyEvent e) {
-        hide()
-      }
-    })
-    add(text)
-    show()
-  }
-}
-
+import org.sikora.ruler.ui.AwtResultWindow
 
 class HookHotKeyListener implements HotkeyListener {
-  def input
-  def result
+  InputField input
+  AwtResultWindow result = new AwtResultWindow()
 
   void onHotKey(int hookId) {
     switch (hookId) {
       case 1:
         input?.focus()
-        result?.hide()
+        result.hide()
         break;
       case 2:
-        result?.show()
+        result.show()
         break;
       default:
         break;
