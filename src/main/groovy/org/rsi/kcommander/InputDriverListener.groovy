@@ -6,6 +6,8 @@ import org.sikora.ruler.model.input.Input
 import org.sikora.ruler.model.input.InputDriver
 import org.sikora.ruler.model.input.InputDriver.Event
 import static org.sikora.ruler.model.input.InputDriver.Command.*
+import org.sikora.ruler.Ruler
+import org.sikora.ruler.Result
 
 /**
  * User: sikorric
@@ -15,10 +17,10 @@ import static org.sikora.ruler.model.input.InputDriver.Command.*
 
 class InputDriverListener implements InputDriver.Listener {
   static def Random RANDOM = new Random()
-  def hookListener
+  final Ruler ruler
 
-  InputDriverListener(hookListener) {
-    this.hookListener = hookListener
+  InputDriverListener(final Ruler ruler) {
+    this.ruler = ruler
   }
 
   void dispatch(Event event) {
@@ -40,7 +42,7 @@ class InputDriverListener implements InputDriver.Listener {
         if ('now' == text) {
           event.driver().set(RESET_INPUT)
           String now = new Date().format('hh:mm dd.MM.yyyy')
-          hookListener.result.display(now)
+          ruler.show(new Result(text: now))
         }
         break
       case CANCEL:

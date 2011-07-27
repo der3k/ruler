@@ -7,4 +7,5 @@ package org.sikora.ruler
  */
  
 class Result {
+  String text
 }
