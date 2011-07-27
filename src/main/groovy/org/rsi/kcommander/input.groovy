@@ -1,10 +1,12 @@
 package org.rsi.kcommander
 
 import com.melloware.jintellitype.JIntellitype
-import org.sikora.ruler.ui.AwtInputDriver
-import org.sikora.ruler.ui.AwtInputWindow
-import org.sikora.ruler.Ruler
-import org.sikora.ruler.ui.AwtResultWindow
+import org.sikora.ruler.AwtInputDriver
+import org.sikora.ruler.ui.awt.AwtInputWindow
+import org.sikora.ruler.model.Ruler
+import org.sikora.ruler.ui.awt.AwtResultWindow
+import org.sikora.ruler.InputDriverListener
+import org.sikora.ruler.RulerHotkeyListener
 
 def input = new AwtInputWindow()
 def driver = new AwtInputDriver(input)

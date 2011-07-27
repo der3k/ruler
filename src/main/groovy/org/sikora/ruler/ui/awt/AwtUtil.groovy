@@ -1,4 +1,4 @@
-package org.sikora.ruler.ui
+package org.sikora.ruler.ui.awt
 
 import com.sun.awt.AWTUtilities
 import java.awt.Color

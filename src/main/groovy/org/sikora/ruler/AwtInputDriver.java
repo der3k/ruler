@@ -1,4 +1,4 @@
-package org.sikora.ruler.ui;
+package org.sikora.ruler;
 
 import org.sikora.ruler.model.input.Hints;
 import org.sikora.ruler.model.input.Input;

@@ -1,6 +1,6 @@
-package org.rsi.kcommander
+package org.sikora.ruler
 
-import org.sikora.ruler.Ruler
+import org.sikora.ruler.model.Ruler
 import com.melloware.jintellitype.HotkeyListener
 
 /**

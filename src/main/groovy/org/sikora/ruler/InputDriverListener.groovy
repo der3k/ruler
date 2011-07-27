@@ -1,4 +1,4 @@
-package org.rsi.kcommander
+package org.sikora.ruler
 
 import com.melloware.jintellitype.JIntellitype
 import org.sikora.ruler.model.input.Hints
@@ -6,8 +6,9 @@ import org.sikora.ruler.model.input.Input
 import org.sikora.ruler.model.input.InputDriver
 import org.sikora.ruler.model.input.InputDriver.Event
 import static org.sikora.ruler.model.input.InputDriver.Command.*
-import org.sikora.ruler.Ruler
-import org.sikora.ruler.Result
+
+import org.sikora.ruler.model.Result
+import org.sikora.ruler.model.Ruler
 
 /**
  * User: sikorric

@@ -1,7 +1,7 @@
-package org.sikora.ruler
+package org.sikora.ruler.model
 
 import org.sikora.ruler.model.input.InputField
-import org.sikora.ruler.ui.AwtResultWindow
+import org.sikora.ruler.ui.awt.AwtResultWindow
 
 /**
  * User: sikorric

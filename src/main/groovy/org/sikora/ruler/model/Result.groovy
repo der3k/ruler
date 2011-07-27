@@ -1,4 +1,4 @@
-package org.sikora.ruler
+package org.sikora.ruler.model
 
 /**
  * User: sikorric
