@@ -1,4 +1,6 @@
-package org.sikora.ruler
+package org.rsi.kcommander
+
+import org.sikora.ruler.Result
 
 /**
  * User: sikorric

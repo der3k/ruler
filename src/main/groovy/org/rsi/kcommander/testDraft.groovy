@@ -1,7 +1,5 @@
 package org.rsi.kcommander
 
-import org.sikora.ruler.TaskDraft
-
 /**
  * User: sikorric
  * Date: 11.7.11
