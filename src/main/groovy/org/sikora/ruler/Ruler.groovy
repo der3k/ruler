@@ -18,7 +18,7 @@ import org.sikora.ruler.ui.awt.AwtInputDriver
  * Time: 15:06
  */
 
-class Ruler implements InputDriver.Listener, HotkeyListener {
+class Ruler implements InputDriver.Handler, HotkeyListener {
   static def Random RANDOM = new Random()
   final InputField inputField
   final AwtResultWindow resultWindow

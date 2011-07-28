@@ -13,9 +13,9 @@ public interface InputDriver {
 
   public void set(Command command);
 
-  public void addListener(Listener listener);
+  public void addListener(Handler listener);
 
-  public void removeListener(Listener listener);
+  public void removeListener(Handler listener);
 
   public class Event {
     private final InputDriver driver;
@@ -81,7 +81,7 @@ public interface InputDriver {
     RESET_INPUT, FOCUS_INPUT, UPDATE_INPUT, UPDATE_HINTS, CANCEL, COMPLETE_INPUT, SUBMIT_INPUT, HIDE_INPUT
   }
 
-  public interface Listener {
+  public interface Handler {
     void dispatch(Event event);
   }
 

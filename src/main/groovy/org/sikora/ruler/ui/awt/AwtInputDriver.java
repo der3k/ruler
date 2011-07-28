@@ -28,7 +28,7 @@ public class AwtInputDriver implements KeyListener, InputDriver {
 
   private final InputField field;
   private Hints hints = Hints.NONE;
-  private final List<Listener> listeners = new ArrayList<Listener>();
+  private final List<Handler> handlers = new ArrayList<Handler>();
   private Input input = Input.EMPTY;
 
   public AwtInputDriver(final InputField field) {
@@ -67,16 +67,16 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     dispatchEventFor(command);
   }
 
-  public void addListener(final Listener listener) {
+  public void addListener(final Handler listener) {
     if (listener == null)
       throw new IllegalArgumentException("listener cannot be null");
-    listeners.add(listener);
+    handlers.add(listener);
   }
 
-  public void removeListener(final Listener listener) {
+  public void removeListener(final Handler listener) {
     if (listener == null)
       throw new IllegalArgumentException("listener to remove cannot be null");
-    listeners.remove(listener);
+    handlers.remove(listener);
   }
 
   public void keyTyped(final KeyEvent event) {
@@ -124,8 +124,8 @@ public class AwtInputDriver implements KeyListener, InputDriver {
   private void dispatchEventFor(final Command command) {
     final Event event = eventFor(command);
     LOGGER.debug("Dispatching {}", event);
-    for (Listener listener : listeners)
-      listener.dispatch(event);
+    for (Handler handler : handlers)
+      handler.dispatch(event);
   }
 
   private void propagateInputUpdate(Input.Update update) {
