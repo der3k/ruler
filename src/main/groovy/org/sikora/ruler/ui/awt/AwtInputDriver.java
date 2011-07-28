@@ -86,8 +86,9 @@ public class AwtInputDriver implements KeyListener, InputDriver {
 
   public void keyPressed(final KeyEvent event) {
     int key = event.getKeyCode();
-    String keyText = getKeyText(key);
-    LOGGER.trace("Key pressed: '{}'", keyText);
+    LOGGER.trace("Key pressed: '{}'", event.getKeyChar());
+    if (isNotRecognizedEvent(event))
+      return;
     switch (key) {
       case VK_ESCAPE:
         consumeKeyEventAndDispatchCommand(event, CANCEL);
@@ -151,6 +152,17 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     if (VK_1 <= key && key <= VK_9)
       return key - VK_1;
     throw new IllegalArgumentException("unsupported complete key: " + getKeyText(key));
+  }
+
+  private boolean isNotRecognizedEvent(KeyEvent event) {
+    if (event.isShiftDown()
+        || event.isAltDown()
+        || event.isAltGraphDown()
+        || event.isControlDown()
+        || event.isMetaDown()
+        || event.isConsumed())
+      return true;
+    return false;
   }
 
 }
