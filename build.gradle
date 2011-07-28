@@ -5,7 +5,7 @@ apply plugin: 'idea'
 version = '1.0-M2'
 archiveBaseName = 'kcommander'
 
-mainClassName = 'org.rsi.kcommander.input'
+mainClassName = 'org.sikora.ruler.Ruler'
 
 dependencies {
   compile files('lib/jintellitype-1.3.6.jar')
