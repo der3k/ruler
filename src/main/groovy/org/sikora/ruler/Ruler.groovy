@@ -44,18 +44,19 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
     switch (event.command()) {
       case UPDATE_INPUT:
         Hints hints = Hints.NONE
-        if (!text.isEmpty()) {
-          def items = (1..RANDOM.nextInt(10)).collect {new Hints.Item("$text:$it")}
-          hints = new Hints(items)
+        if (!text.trim().isEmpty()) {
+          if ("no".startsWith(text.trim()))
+            hints = new Hints([new Hints.Item('now')])
         }
         event.driver().set(hints)
         break
       case COMPLETE_INPUT:
-        if (event.hint() != Hints.Item.NONE)
-          event.driver().set(Input.of(text + event.hint()))
+        if (event.hint() != Hints.Item.NONE) {
+          event.driver().set(Input.of(event.hint().toString() + ' '))
+        }
         break
       case SUBMIT_INPUT:
-        if ('now' == text) {
+        if ('now' == text.trim()) {
           event.driver().set(RESET_INPUT)
           String now = new Date().format('hh:mm dd.MM.yyyy')
           resultWindow.display(now)
