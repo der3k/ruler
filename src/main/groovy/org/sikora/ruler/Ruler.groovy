@@ -6,8 +6,7 @@ import org.sikora.ruler.model.input.Hints
 import org.sikora.ruler.model.input.Input
 import org.sikora.ruler.model.input.InputDriver
 import org.sikora.ruler.model.input.InputDriver.Event
-import org.sikora.ruler.model.input.InputField
-import org.sikora.ruler.ui.awt.AwtInputWindow
+
 import org.sikora.ruler.ui.awt.AwtResultWindow
 import static org.sikora.ruler.model.input.InputDriver.Command.*
 import org.sikora.ruler.ui.awt.AwtInputDriver
@@ -20,16 +19,13 @@ import org.sikora.ruler.ui.awt.AwtInputDriver
 
 class Ruler implements InputDriver.Handler, HotkeyListener {
   static def Random RANDOM = new Random()
-  final InputField inputField
+  final InputDriver inputDriver
   final AwtResultWindow resultWindow
 
   public static void main(String[] args) {
-    def input = new AwtInputWindow()
-    def driver = new AwtInputDriver(input)
-    input.addKeyListener(driver)
-
-    def ruler = new Ruler(input, new AwtResultWindow())
-    driver.addListener(ruler)
+    def driver = new AwtInputDriver()
+    def ruler = new Ruler(driver, new AwtResultWindow())
+    driver.addHandler(ruler)
 
     JIntellitype.setLibraryLocation('../lib/JIntellitype64.dll')
     def hook = JIntellitype.getInstance()
@@ -38,8 +34,8 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
     hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ')
   }
 
-  Ruler(final InputField inputField, final AwtResultWindow resultWindow) {
-    this.inputField = inputField
+  Ruler(final InputDriver inputDriver, final AwtResultWindow resultWindow) {
+    this.inputDriver = inputDriver
     this.resultWindow = resultWindow
   }
 
@@ -66,6 +62,7 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
         }
         break
       case CANCEL:
+        event.driver().set(HIDE_INPUT)
         JIntellitype.getInstance().cleanUp()
         System.exit(1)
         break
@@ -75,7 +72,7 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
   void onHotKey(int hook) {
     switch (hook) {
       case 1:
-        inputField.focus()
+        inputDriver.set(FOCUS_INPUT)
         break;
       case 2:
         resultWindow.display()

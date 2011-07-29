@@ -26,54 +26,56 @@ public class AwtInputDriver implements KeyListener, InputDriver {
   private static final char COMPLETE_KEY_MIN = '1';
   private static final char COMPLETE_KEY_MAX = '9';
 
-  private final InputField field;
+  private final InputField inputField;
   private Hints hints = Hints.NONE;
   private final List<Handler> handlers = new ArrayList<Handler>();
   private Input input = Input.EMPTY;
 
-  public AwtInputDriver(final InputField field) {
-    this.field = field;
-    field.set(input);
+  public AwtInputDriver() {
+    final AwtInputWindow inputWindow = new AwtInputWindow();
+    inputWindow.addKeyListener(this);
+    inputWindow.set(input);
+    inputField = inputWindow;
   }
 
   public void set(final Input input) {
-    field.set(input);
+    inputField.set(input);
     Input.Update update = this.input.updateTo(input);
     propagateInputUpdate(update);
   }
 
   public void set(final Hints hints) {
     this.hints = hints;
-    field.set(hints);
+    inputField.set(hints);
     dispatchEventFor(UPDATE_HINTS);
   }
 
   public void set(final Command command) {
     switch (command) {
       case FOCUS_INPUT:
-        field.focus();
+        inputField.focus();
         break;
       case HIDE_INPUT:
-        field.hide();
+        inputField.hide();
         break;
       case RESET_INPUT:
         input = Input.EMPTY;
         hints = Hints.NONE;
-        field.set(input);
-        field.set(hints);
-        field.hide();
+        inputField.set(input);
+        inputField.set(hints);
+        inputField.hide();
         break;
     }
     dispatchEventFor(command);
   }
 
-  public void addListener(final Handler listener) {
+  public void addHandler(final Handler listener) {
     if (listener == null)
       throw new IllegalArgumentException("listener cannot be null");
     handlers.add(listener);
   }
 
-  public void removeListener(final Handler listener) {
+  public void removeHandler(final Handler listener) {
     if (listener == null)
       throw new IllegalArgumentException("listener to remove cannot be null");
     handlers.remove(listener);
@@ -113,7 +115,7 @@ public class AwtInputDriver implements KeyListener, InputDriver {
   }
 
   public void keyReleased(KeyEvent event) {
-    Input.Update update = input.updateTo(field.input());
+    Input.Update update = input.updateTo(inputField.input());
     propagateInputUpdate(update);
   }
 

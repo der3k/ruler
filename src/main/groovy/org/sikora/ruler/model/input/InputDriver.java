@@ -13,9 +13,9 @@ public interface InputDriver {
 
   public void set(Command command);
 
-  public void addListener(Handler listener);
+  public void addHandler(Handler listener);
 
-  public void removeListener(Handler listener);
+  public void removeHandler(Handler listener);
 
   public class Event {
     private final InputDriver driver;

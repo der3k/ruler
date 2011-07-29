@@ -11,7 +11,7 @@ def driver = new AwtInputDriver(input)
 input.addKeyListener(driver)
 
 def ruler = new Ruler(input, new AwtResultWindow())
-driver.addListener(ruler)
+driver.addHandler(ruler)
 
 JIntellitype.setLibraryLocation('../lib/JIntellitype64.dll')
 def hook = JIntellitype.getInstance()
