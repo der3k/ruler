@@ -3,7 +3,7 @@ apply plugin: 'application'
 apply plugin: 'idea'
 
 version = '1.0-M2'
-archiveBaseName = 'kcommander'
+archiveBaseName = 'ruler'
 
 mainClassName = 'org.sikora.ruler.Ruler'
 
