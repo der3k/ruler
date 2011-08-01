@@ -7,8 +7,8 @@ import org.sikora.ruler.model.input.Hints.Item
 import org.sikora.ruler.model.input.Input
 import org.sikora.ruler.model.input.InputDriver
 import spock.lang.Specification
-import static org.sikora.ruler.model.input.InputDriver.Command.*
 import static java.awt.event.KeyEvent.*
+import static org.sikora.ruler.model.input.InputDriver.Command.*
 
 /**
  * User: der3k
