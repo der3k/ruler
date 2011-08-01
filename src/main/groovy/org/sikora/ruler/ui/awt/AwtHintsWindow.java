@@ -42,13 +42,16 @@ public class AwtHintsWindow {
     int size = Math.min(9, hints.size());
     Hints.Item[] items = hints.items();
     final StringBuilder content = new StringBuilder();
-    for (int i = 1; i <= size; i++)
-      content.append(i)
-          .append(" - ")
-          .append(items[i - 1])
-          .append("\n");
+    for (int i = 1; i < size; i++)
+      appendItemLabel(content, i, items[i - 1]).append("\n");
+    appendItemLabel(content, size, items[size - 1]);
     textArea.setText(content.toString());
     window.setSize(600, size * 40);
+  }
+
+  private StringBuilder appendItemLabel(final StringBuilder builder, final int i, final Hints.Item item) {
+    builder.append(i).append(" - ").append(item);
+    return builder;
   }
 
 }
