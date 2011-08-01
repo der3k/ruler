@@ -1,18 +1,26 @@
 package org.sikora.ruler.model.input;
 
 /**
- * User: der3k
- * Date: 11.7.11
- * Time: 17:42
+ * Value object encapsulating user input.
  */
 public final class Input {
   private static final String MARKER_PRESENTATION = "|";
 
+  /**
+   * Null user input input.
+   */
   public static Input EMPTY = new Input("", 0);
 
   private final String text;
   private final int marker;
 
+  /**
+   * Creates new Input from text and marker index.
+   *
+   * @param text input text
+   * @param marker zero based marker position
+   * @return Input from text with marker set
+   */
   public static Input of(final String text, final int marker) {
     return new Input(text, marker);
   }
