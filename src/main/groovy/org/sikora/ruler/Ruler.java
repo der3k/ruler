@@ -46,11 +46,13 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
     switch (event.command()) {
       case UPDATE_INPUT:
         Hints hints = Hints.NONE;
-        if (!text.trim().isEmpty() && "no".startsWith(text.trim())) {
-          ArrayList<Hints.Item> items = new ArrayList<Hints.Item>();
+        ArrayList<Hints.Item> items = new ArrayList<Hints.Item>();
+        if (!text.trim().isEmpty() && "no".startsWith(text.trim()))
           items.add(new Hints.Item("now"));
+        if (!text.trim().isEmpty() && "quit".startsWith(text.trim()))
+          items.add(new Hints.Item("quit"));
+        if (items.size() > 0)
           hints = new Hints(items);
-        }
         event.driver().set(hints);
         break;
       case COMPLETE_INPUT:
@@ -64,11 +66,14 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
           String now = new Date().toString();
           resultWindow.display(now);
         }
+        if ("quit".equals(text.trim())) {
+          JIntellitype.getInstance().cleanUp();
+          System.exit(0);
+        }
         break;
       case CANCEL:
         event.driver().set(HIDE_INPUT);
-        JIntellitype.getInstance().cleanUp();
-        System.exit(1);
+        event.driver().set(RESET_INPUT);
         break;
     }
   }

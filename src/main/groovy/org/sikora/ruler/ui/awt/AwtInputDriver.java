@@ -87,8 +87,8 @@ public class AwtInputDriver implements KeyListener, InputDriver {
   }
 
   public void keyPressed(final KeyEvent event) {
-    int key = event.getKeyCode();
-    LOGGER.trace("Key pressed: '{}'", event.getKeyChar());
+    final int key = event.getKeyCode();
+    LOGGER.trace("Key pressed: '{}'", eventKeys(event));
     if (isNotRecognizedEvent(event))
       return;
     switch (key) {
@@ -157,14 +157,20 @@ public class AwtInputDriver implements KeyListener, InputDriver {
   }
 
   private boolean isNotRecognizedEvent(KeyEvent event) {
-    if (event.isShiftDown()
+    return event.isShiftDown()
         || event.isAltDown()
         || event.isAltGraphDown()
         || event.isControlDown()
         || event.isMetaDown()
-        || event.isConsumed())
-      return true;
-    return false;
+        || event.isConsumed();
+  }
+
+  private String eventKeys(final KeyEvent event) {
+    final StringBuilder builder = new StringBuilder();
+    if (event.getModifiersEx() != 0)
+      builder.append(getModifiersExText(event.getModifiersEx())).append("+ ");
+    builder.append(getKeyText(event.getKeyCode()));
+    return builder.toString();
   }
 
 }
