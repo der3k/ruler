@@ -36,7 +36,7 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
     hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ');
   }
 
-  private Ruler(final InputDriver inputDriver, final AwtResultWindow resultWindow) {
+  protected Ruler(final InputDriver inputDriver, final AwtResultWindow resultWindow) {
     this.inputDriver = inputDriver;
     this.resultWindow = resultWindow;
   }
