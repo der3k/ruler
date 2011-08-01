@@ -1,13 +1,10 @@
-package org.sikora.ruler.ui.awt
+package org.sikora.ruler.ui.awt;
 
-import com.sun.awt.AWTUtilities
-import java.awt.Color
-import java.awt.Font
-import java.awt.Window
-import javax.swing.BorderFactory
-import javax.swing.JDialog
-import javax.swing.JWindow
-import javax.swing.text.JTextComponent
+import com.sun.awt.AWTUtilities;
+
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
 
 /**
  * User: der3k
@@ -15,32 +12,32 @@ import javax.swing.text.JTextComponent
  * Time: 11:19
  */
 class AwtUtil {
-  static void setLocationAndSize(Window window, int x, int y, int dx, int dy) {
-    window.setLocation(x, y)
-    window.setSize(dx, dy)
+  static void setLocationAndSize(final Window window, final int x, final int y, final int dx, final int dy) {
+    window.setLocation(x, y);
+    window.setSize(dx, dy);
   }
 
-  static void setFontAndColor(JTextComponent field, int fontSize) {
-    field.setBackground(Color.BLACK)
-    field.setForeground(Color.YELLOW)
-    field.setFont(new Font('Candara', Font.PLAIN, fontSize))
+  public static void setFontAndColor(final JTextComponent field, final int fontSize) {
+    field.setBackground(Color.BLACK);
+    field.setForeground(Color.YELLOW);
+    field.setFont(new Font("Candara", Font.PLAIN, fontSize));
   }
 
-  static void setEmptyBorder(JTextComponent field, int size) {
-    field.setBorder(BorderFactory.createEmptyBorder(size, size, size, size))
+  public static void setEmptyBorder(final JTextComponent field, final int size) {
+    field.setBorder(BorderFactory.createEmptyBorder(size, size, size, size));
   }
 
-  static void makeWindowOpaque(Window window) {
+  public static void makeWindowOpaque(final Window window) {
     if (window instanceof JWindow) {
-      JWindow jWindow = ((JWindow) window)
-      jWindow.getContentPane().setBackground(Color.BLACK)
+      JWindow jWindow = ((JWindow) window);
+      jWindow.getContentPane().setBackground(Color.BLACK);
     }
     if (window instanceof JDialog) {
-      JDialog jDialog = ((JDialog) window)
-      jDialog.setUndecorated(true)
-      jDialog.getContentPane().setBackground(Color.BLACK)
+      JDialog jDialog = ((JDialog) window);
+      jDialog.setUndecorated(true);
+      jDialog.getContentPane().setBackground(Color.BLACK);
     }
-    AWTUtilities.setWindowOpacity(window, 0.85f)
+    AWTUtilities.setWindowOpacity(window, 0.85f);
   }
 
 }

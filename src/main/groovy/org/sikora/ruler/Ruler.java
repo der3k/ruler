@@ -1,15 +1,18 @@
-package org.sikora.ruler
+package org.sikora.ruler;
 
-import com.melloware.jintellitype.HotkeyListener
-import com.melloware.jintellitype.JIntellitype
-import org.sikora.ruler.model.input.Hints
-import org.sikora.ruler.model.input.Input
-import org.sikora.ruler.model.input.InputDriver
-import org.sikora.ruler.model.input.InputDriver.Event
+import com.melloware.jintellitype.HotkeyListener;
+import com.melloware.jintellitype.JIntellitype;
+import org.sikora.ruler.model.input.Hints;
+import org.sikora.ruler.model.input.Input;
+import org.sikora.ruler.model.input.InputDriver;
+import org.sikora.ruler.model.input.InputDriver.Event;
+import org.sikora.ruler.ui.awt.AwtInputDriver;
+import org.sikora.ruler.ui.awt.AwtResultWindow;
 
-import org.sikora.ruler.ui.awt.AwtResultWindow
-import static org.sikora.ruler.model.input.InputDriver.Command.*
-import org.sikora.ruler.ui.awt.AwtInputDriver
+import java.util.ArrayList;
+import java.util.Date;
+
+import static org.sikora.ruler.model.input.InputDriver.Command.*;
 
 /**
  * User: sikorric
@@ -18,65 +21,65 @@ import org.sikora.ruler.ui.awt.AwtInputDriver
  */
 
 class Ruler implements InputDriver.Handler, HotkeyListener {
-  static def Random RANDOM = new Random()
-  final InputDriver inputDriver
-  final AwtResultWindow resultWindow
+  final InputDriver inputDriver;
+  final AwtResultWindow resultWindow;
 
   public static void main(String[] args) {
-    def driver = new AwtInputDriver()
-    def ruler = new Ruler(driver, new AwtResultWindow())
-    driver.addHandler(ruler)
+    InputDriver driver = new AwtInputDriver();
+    Ruler ruler = new Ruler(driver, new AwtResultWindow());
+    driver.addHandler(ruler);
 
-    JIntellitype.setLibraryLocation('../lib/JIntellitype64.dll')
-    def hook = JIntellitype.getInstance()
-    hook.addHotKeyListener(ruler)
-    hook.registerHotKey(1, JIntellitype.MOD_CONTROL, (int) ' ')
-    hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ')
+    JIntellitype.setLibraryLocation("../lib/JIntellitype64.dll");
+    JIntellitype hook = JIntellitype.getInstance();
+    hook.addHotKeyListener(ruler);
+    hook.registerHotKey(1, JIntellitype.MOD_CONTROL, (int) ' ');
+    hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ');
   }
 
-  Ruler(final InputDriver inputDriver, final AwtResultWindow resultWindow) {
-    this.inputDriver = inputDriver
-    this.resultWindow = resultWindow
+  private Ruler(final InputDriver inputDriver, final AwtResultWindow resultWindow) {
+    this.inputDriver = inputDriver;
+    this.resultWindow = resultWindow;
   }
 
-  void dispatch(Event event) {
-    final String text = event.input().text()
+  public void dispatch(Event event) {
+    final String text = event.input().text();
     switch (event.command()) {
       case UPDATE_INPUT:
-        Hints hints = Hints.NONE
-        if (!text.trim().isEmpty()) {
-          if ("no".startsWith(text.trim()))
-            hints = new Hints([new Hints.Item('now')])
+        Hints hints = Hints.NONE;
+        if (!text.trim().isEmpty() && "no".startsWith(text.trim())) {
+          ArrayList<Hints.Item> items = new ArrayList<Hints.Item>();
+          items.add(new Hints.Item("now"));
+          hints = new Hints(items);
         }
-        event.driver().set(hints)
-        break
+        event.driver().set(hints);
+        break;
       case COMPLETE_INPUT:
         if (event.hint() != Hints.Item.NONE) {
-          event.driver().set(Input.of(event.hint().toString() + ' '))
+          event.driver().set(Input.of(event.hint().toString() + ' '));
         }
-        break
+        break;
       case SUBMIT_INPUT:
-        if ('now' == text.trim()) {
-          event.driver().set(RESET_INPUT)
-          String now = new Date().format('hh:mm dd.MM.yyyy')
-          resultWindow.display(now)
+        if ("now".equals(text.trim())) {
+          event.driver().set(RESET_INPUT);
+          String now = new Date().toString();
+          resultWindow.display(now);
         }
-        break
+        break;
       case CANCEL:
-        event.driver().set(HIDE_INPUT)
-        JIntellitype.getInstance().cleanUp()
-        System.exit(1)
-        break
+        event.driver().set(HIDE_INPUT);
+        JIntellitype.getInstance().cleanUp();
+        System.exit(1);
+        break;
     }
   }
 
-  void onHotKey(int hook) {
+  public void onHotKey(int hook) {
     switch (hook) {
       case 1:
-        inputDriver.set(FOCUS_INPUT)
+        inputDriver.set(FOCUS_INPUT);
         break;
       case 2:
-        resultWindow.display()
+        resultWindow.display();
         break;
       default:
         break;
