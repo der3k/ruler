@@ -63,7 +63,6 @@ public class AwtInputDriver implements KeyListener, InputDriver {
         hints = Hints.NONE;
         inputField.set(input);
         inputField.set(hints);
-        inputField.hide();
         break;
     }
     dispatchEventFor(command);

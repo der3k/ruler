@@ -62,6 +62,7 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
         break;
       case SUBMIT_INPUT:
         if ("now".equals(text.trim())) {
+          event.driver().set(HIDE_INPUT);
           event.driver().set(RESET_INPUT);
           String now = new Date().toString();
           resultWindow.display(now);
