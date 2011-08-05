@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: sikorric
- * Date: 12.7.11
- * Time: 16:48
+ * Data object containing hint items. It allows to select hint by index.
  */
-
 public class Hints {
+  /**
+   * Value representing no hints.
+   */
   public static final Hints NONE = new Hints();
 
   private Item selected = Item.NONE;
@@ -18,6 +18,12 @@ public class Hints {
   private Hints() {
   }
 
+  /**
+   * Creates hints from list of items. There will be Item.NONE selected.
+   *
+   * @param items list of hint items
+   * @throws IllegalArgumentException when items are null or contain no item
+   */
   public Hints(List<Item> items) {
     super();
     if (items == null)
@@ -27,6 +33,11 @@ public class Hints {
     this.items.addAll(items);
   }
 
+  /**
+   * Selects current item. If the index is out of bound it silently selects Item.NONE.
+   *
+   * @param index item index
+   */
   public void select(int index) {
     if (index < 0 || index >= items.size()) {
       selected = Item.NONE;
@@ -35,14 +46,30 @@ public class Hints {
     selected = items.get(index);
   }
 
+
+  /**
+   * Returns currently selected item.
+   *
+   * @return selected item
+   */
   public Item selected() {
     return selected;
   }
 
+  /**
+   * Returns hint items. Defensive array copy is created on each call.
+   *
+   * @return
+   */
   public Item[] items() {
     return items.toArray(new Item[items.size()]);
   }
 
+  /**
+   * Returns hints count.
+   *
+   * @return hints count
+   */
   public int size() {
     return items.size();
   }
@@ -67,9 +94,28 @@ public class Hints {
     return result;
   }
 
+  /**
+   * Value object containing item data.
+   */
   public static class Item {
+    /**
+     * Null item instance.
+     */
+    public static final Item NONE = new Item("?") {
+      @Override
+      public boolean equals(final Object o) {
+        return this == o;
+      }
+    };
+
     private final String text;
 
+    /**
+     * Creates new Item from text.
+     *
+     * @param text item text
+     * @throws IllegalArgumentException when text is null or empty
+     */
     public Item(final String text) {
       if (text == null)
         throw new IllegalArgumentException("Hint Item text cannot be null");
@@ -77,8 +123,6 @@ public class Hints {
         throw new IllegalArgumentException("Hint Item text cannot be empty");
       this.text = text;
     }
-
-    public static final Item NONE = new Item("?");
 
     @Override
     public String toString() {
@@ -102,6 +146,5 @@ public class Hints {
       return text != null ? text.hashCode() : 0;
     }
   }
-
 
 }
