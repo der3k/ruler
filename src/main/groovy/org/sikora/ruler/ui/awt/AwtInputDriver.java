@@ -50,7 +50,7 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     dispatchEventFor(UPDATE_HINTS);
   }
 
-  public void set(final Command command) {
+  public void issue(final Command command) {
     switch (command) {
       case FOCUS_INPUT:
         inputField.focus();
@@ -68,16 +68,16 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     dispatchEventFor(command);
   }
 
-  public void addHandler(final Handler listener) {
-    if (listener == null)
+  public void addHandler(final Handler handler) {
+    if (handler == null)
       throw new IllegalArgumentException("listener cannot be null");
-    handlers.add(listener);
+    handlers.add(handler);
   }
 
-  public void removeHandler(final Handler listener) {
-    if (listener == null)
+  public void removeHandler(final Handler handler) {
+    if (handler == null)
       throw new IllegalArgumentException("listener to remove cannot be null");
-    handlers.remove(listener);
+    handlers.remove(handler);
   }
 
   public void keyTyped(final KeyEvent event) {

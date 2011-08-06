@@ -19,7 +19,7 @@ public class RulerTest extends Specification {
   when:
     ruler.onHotKey(1)
   then:
-    1 * driver.set(Command.FOCUS_INPUT)
+    1 * driver.issue(Command.FOCUS_INPUT)
   }
 
   def 'second global hotkey shows result window'() {

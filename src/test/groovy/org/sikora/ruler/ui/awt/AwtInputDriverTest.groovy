@@ -49,24 +49,24 @@ public class AwtInputDriverTest extends Specification {
     1 * handler.dispatch({ it.command() == UPDATE_HINTS })
   }
 
-  def 'sets command'() {
+  def 'issues command'() {
   when:
-    driver.set(UPDATE_INPUT)
+    driver.issue(UPDATE_INPUT)
   then:
     1 * handler.dispatch({ it.command() == UPDATE_INPUT })
   }
 
   def 'propagates FOCUS_INPUT command'() {
   when:
-    driver.set(FOCUS_INPUT)
+    driver.issue(FOCUS_INPUT)
   then:
     inputField.window.isFocused()
   }
 
   def 'propagates HIDE_INPUT command'() {
-    driver.set(FOCUS_INPUT)
+    driver.issue(FOCUS_INPUT)
   when:
-    driver.set(HIDE_INPUT)
+    driver.issue(HIDE_INPUT)
   then:
     !inputField.window.isVisible()
   }
@@ -74,7 +74,7 @@ public class AwtInputDriverTest extends Specification {
   def 'propagates RESET_INPUT command'() {
     driver.set(Input.of('task'))
   when:
-    driver.set(RESET_INPUT)
+    driver.issue(RESET_INPUT)
   then:
     driver.input == Input.EMPTY
     driver.hints == Hints.NONE

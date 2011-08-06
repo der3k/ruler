@@ -62,8 +62,8 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
         break;
       case SUBMIT_INPUT:
         if ("now".equals(text.trim())) {
-          event.driver().set(HIDE_INPUT);
-          event.driver().set(RESET_INPUT);
+          event.driver().issue(HIDE_INPUT);
+          event.driver().issue(RESET_INPUT);
           String now = new Date().toString();
           resultWindow.display(now);
         }
@@ -73,8 +73,8 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
         }
         break;
       case CANCEL:
-        event.driver().set(HIDE_INPUT);
-        event.driver().set(RESET_INPUT);
+        event.driver().issue(HIDE_INPUT);
+        event.driver().issue(RESET_INPUT);
         break;
     }
   }
@@ -82,7 +82,7 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
   public void onHotKey(int hook) {
     switch (hook) {
       case 1:
-        inputDriver.set(FOCUS_INPUT);
+        inputDriver.issue(FOCUS_INPUT);
         break;
       case 2:
         resultWindow.display();
