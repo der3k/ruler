@@ -1,22 +1,37 @@
 package org.sikora.ruler.model.input;
 
-import org.sikora.ruler.model.input.Hints;
-import org.sikora.ruler.model.input.Input;
-
 /**
- * User: sikorric
- * Date: 13.7.11
- * Time: 12:16
+ * Defines behaviour of input device field.
  */
-
 public interface InputField {
+  /**
+   * Returns current input value.
+   *
+   * @return input value
+   */
   public Input input();
 
+  /**
+   * Sets input value.
+   *
+   * @param input new input value
+   */
   public void set(Input input);
 
+  /**
+   * Sets hints.
+   *
+   * @param hints new hints
+   */
   public void set(Hints hints);
 
+  /**
+   * Starts receiving input.
+   */
   public void focus();
 
+  /**
+   * Stops receiving input.
+   */
   public void hide();
 }
