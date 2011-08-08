@@ -5,13 +5,14 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 /**
- * User: der3k
- * Date: 23.7.11
- * Time: 21:17
+ * AWT window for displaying task results.
  */
 public class AwtResultWindow extends JDialog {
   private final JTextArea textArea = new JTextArea();
 
+  /**
+   * Creates new result window, initially hidden.
+   */
   public AwtResultWindow() {
     configureWindow();
     configureTextArea();
@@ -37,10 +38,18 @@ public class AwtResultWindow extends JDialog {
     });
   }
 
+  /**
+   * Displays the window with previously set content.
+   */
   public void display() {
     setVisible(true);
   }
 
+  /**
+   * Displays the window with given content.
+   *
+   * @param text result
+   */
   public void display(String text) {
     textArea.setText(text);
     setVisible(true);
