@@ -5,14 +5,15 @@ import org.sikora.ruler.model.input.Hints;
 import javax.swing.*;
 
 /**
- * User: der3k
- * Date: 23.7.11
- * Time: 20:41
+ * Provides AWT window for displaying hints. It is used by AwtInputWindow.
  */
 public class AwtHintsWindow {
   private final JWindow window = new JWindow();
   private final JTextArea textArea = new JTextArea();
 
+  /**
+   * Creates new hints window initially hidden.
+   */
   public AwtHintsWindow() {
     AwtUtil.setLocationAndSize(window, 0, 50, 600, 355);
     AwtUtil.makeWindowOpaque(window);
@@ -25,10 +26,19 @@ public class AwtHintsWindow {
     AwtUtil.setEmptyBorder(textArea, 10);
   }
 
+  /**
+   * Hides the window.
+   */
   public void hide() {
     window.setVisible(false);
   }
 
+  /**
+   * Displays hints. If there are no hints the window hides automatically. If the window was hidden and there
+   * are hints to display it shows automatically.
+   *
+   * @param hints hints to display
+   */
   public void set(Hints hints) {
     if (hints.size() == 0) {
       window.setVisible(false);
