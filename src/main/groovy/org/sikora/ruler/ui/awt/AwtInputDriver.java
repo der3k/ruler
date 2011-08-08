@@ -16,11 +16,8 @@ import static java.awt.event.KeyEvent.*;
 import static org.sikora.ruler.model.input.InputDriver.Command.*;
 
 /**
- * User: sikorric
- * Date: 13.7.11
- * Time: 11:59
+ * AWT implementation of the input driver. It utilizes KeyListener to access AWT key events.
  */
-
 public class AwtInputDriver implements KeyListener, InputDriver {
   private static final Logger LOGGER = LoggerFactory.getLogger(AwtInputDriver.class);
   private static final char COMPLETE_KEY_MIN = '1';
@@ -31,6 +28,9 @@ public class AwtInputDriver implements KeyListener, InputDriver {
   private final List<Handler> handlers = new ArrayList<Handler>();
   private Input input = Input.EMPTY;
 
+  /**
+   * Creates new input driver. It uses AwtInputWindow for capturing key events.
+   */
   public AwtInputDriver() {
     final AwtInputWindow inputWindow = new AwtInputWindow();
     inputWindow.addKeyListener(this);
@@ -80,11 +80,21 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     handlers.remove(handler);
   }
 
+  /**
+   * Consumes key event when complete key was typed (keys 1-9).
+   *
+   * @param event key event
+   */
   public void keyTyped(final KeyEvent event) {
     if (isCompleteKey(event.getKeyChar()))
       event.consume();
   }
 
+  /**
+   * Dispatches driver events for functional keys (ESC, ENTER, TAB, 1-9).
+   *
+   * @param event key event
+   */
   public void keyPressed(final KeyEvent event) {
     final int key = event.getKeyCode();
     LOGGER.trace("Key pressed: '{}'", eventKeys(event));
@@ -113,6 +123,11 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     }
   }
 
+  /**
+   * Recognizes and propagates input updates.
+   *
+   * @param event key event
+   */
   public void keyReleased(KeyEvent event) {
     Input.Update update = input.updateTo(inputField.input());
     propagateInputUpdate(update);
