@@ -15,16 +15,19 @@ import java.util.Date;
 import static org.sikora.ruler.model.input.InputDriver.Command.*;
 
 /**
- * User: sikorric
- * Date: 8.7.11
- * Time: 15:06
+ * Input driver handler. It provides context based hints and executes recognized tasks. It is activated by
+ * global hot key.
  */
-
-class Ruler implements InputDriver.Handler, HotkeyListener {
+public class Ruler implements InputDriver.Handler, HotkeyListener {
   final InputDriver inputDriver;
   final AwtResultWindow resultWindow;
 
-  public static void main(String[] args) {
+  /**
+   * Configures global key hooks and wires Ruler to it. It uses AwtInputDriver for receiving users input.
+   *
+   * @param args ignored
+   */
+  public static void main(final String[] args) {
     InputDriver driver = new AwtInputDriver();
     Ruler ruler = new Ruler(driver, new AwtResultWindow());
     driver.addHandler(ruler);
@@ -36,12 +39,18 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
     hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ');
   }
 
-  protected Ruler(final InputDriver inputDriver, final AwtResultWindow resultWindow) {
+  private Ruler(final InputDriver inputDriver, final AwtResultWindow resultWindow) {
     this.inputDriver = inputDriver;
     this.resultWindow = resultWindow;
   }
 
-  public void dispatch(Event event) {
+  /**
+   * Based on input driver event provides context based hints back to the driver.
+   * It also executes recognized tasks.
+   *
+   * @param event input driver event
+   */
+  public void dispatch(final Event event) {
     final String text = event.input().text();
     switch (event.command()) {
       case UPDATE_INPUT:
@@ -79,7 +88,12 @@ class Ruler implements InputDriver.Handler, HotkeyListener {
     }
   }
 
-  public void onHotKey(int hook) {
+  /**
+   * Global hot key hook. It focuses input window or result window based on a hot key.
+   *
+   * @param hook hook id
+   */
+  public void onHotKey(final int hook) {
     switch (hook) {
       case 1:
         inputDriver.issue(FOCUS_INPUT);
