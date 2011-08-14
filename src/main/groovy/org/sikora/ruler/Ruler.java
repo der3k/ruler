@@ -5,6 +5,8 @@ import com.melloware.jintellitype.JIntellitype;
 import org.sikora.ruler.model.input.InputDriver;
 import org.sikora.ruler.model.input.InputDriver.Event;
 import org.sikora.ruler.task.*;
+import org.sikora.ruler.task.impl.BaseDefinitionRepository;
+import org.sikora.ruler.task.impl.DefinitionDraftFactory;
 import org.sikora.ruler.ui.awt.AwtInputDriver;
 import org.sikora.ruler.ui.awt.AwtResultWindow;
 

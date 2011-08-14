@@ -1,9 +1,13 @@
-package org.sikora.ruler.task;
+package org.sikora.ruler.task.impl;
 
 import com.melloware.jintellitype.JIntellitype;
 import org.sikora.ruler.model.input.Hints;
 import org.sikora.ruler.model.input.Input;
 import org.sikora.ruler.model.input.InputDriver;
+import org.sikora.ruler.task.Definition;
+import org.sikora.ruler.task.DefinitionRepository;
+import org.sikora.ruler.task.Result;
+import org.sikora.ruler.task.Task;
 import org.sikora.ruler.ui.awt.AwtResultWindow;
 
 import java.util.*;
@@ -128,6 +132,7 @@ public class BaseDefinitionRepository implements DefinitionRepository {
     }
 
     public void onInputUpdate(final InputDriver.Event event) {
+      event.driver().set(Hints.NONE);
     }
 
     public void onCompleteInput(final InputDriver.Event event) {

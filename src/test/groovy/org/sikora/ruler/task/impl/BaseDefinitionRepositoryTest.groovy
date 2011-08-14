@@ -1,8 +1,9 @@
-package org.sikora.ruler.task;
+package org.sikora.ruler.task.impl;
 
 
 import org.sikora.ruler.model.input.Input
 import spock.lang.Specification
+import org.sikora.ruler.task.impl.BaseDefinitionRepository
 
 /**
  * User: der3k

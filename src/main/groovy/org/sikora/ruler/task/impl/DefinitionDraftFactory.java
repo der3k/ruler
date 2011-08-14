@@ -1,6 +1,7 @@
-package org.sikora.ruler.task;
+package org.sikora.ruler.task.impl;
 
 import org.sikora.ruler.model.input.InputDriver;
+import org.sikora.ruler.task.*;
 
 /**
  * User: der3k
