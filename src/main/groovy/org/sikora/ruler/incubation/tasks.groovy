@@ -25,14 +25,6 @@ interface HintsProvider {
   Hints hints()
 }
 
-class Definition {
-
-}
-
-interface DefinitionRepository extends HintsProvider {
-  Definition definitionFor(Input input)
-}
-
 interface DraftFactory {
   Draft draftFor(Event event)
 }

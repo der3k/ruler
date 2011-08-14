@@ -26,8 +26,8 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
    */
   public static void main(final String[] args) {
     InputDriver driver = new AwtInputDriver();
-    DraftFactory draftFactory = new DefinitionDraftFactory();
-    Ruler ruler = new Ruler(driver, draftFactory, new AwtResultWindow());
+    DefinitionRepository definitionRepository = new BaseDefinitionRepository();
+    Ruler ruler = new Ruler(driver, definitionRepository, new AwtResultWindow());
     driver.addHandler(ruler);
 
     JIntellitype.setLibraryLocation("../lib/JIntellitype64.dll");
@@ -37,9 +37,9 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
     hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ');
   }
 
-  private Ruler(final InputDriver inputDriver, final DraftFactory draftFactory, final AwtResultWindow resultWindow) {
+  private Ruler(final InputDriver inputDriver, final DefinitionRepository definitionRepository, final AwtResultWindow resultWindow) {
     this.inputDriver = inputDriver;
-    this.draftFactory = draftFactory;
+    this.draftFactory = new DefinitionDraftFactory(definitionRepository);
     this.resultWindow = resultWindow;
   }
 
