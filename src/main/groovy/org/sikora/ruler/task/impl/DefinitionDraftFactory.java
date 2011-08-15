@@ -36,7 +36,7 @@ public class DefinitionDraftFactory implements DraftFactory {
     return new Draft() {
 
       public boolean isTaskComplete() {
-        return definition.isCompleteFor(event.input());
+        return definition.isCompleteFor(event);
       }
 
       public Task toTask() {

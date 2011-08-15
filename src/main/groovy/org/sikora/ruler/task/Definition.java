@@ -40,10 +40,10 @@ public interface Definition {
   /**
    * Returns true if the definition is complete for given input.
    *
-   * @param input input driver input
+   * @param event input event in context
    * @return true if the input defines complete task, false otherwise
    */
-  boolean isCompleteFor(Input input);
+  boolean isCompleteFor(final InputEventInContext event);
 
   /**
    * Creates new task from event.

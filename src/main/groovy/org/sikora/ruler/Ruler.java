@@ -65,9 +65,6 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
           final Task task = draft.toTask();
           final Result result = task.performAction();
           result.display();
-        } else {
-          currentContext.inputDriver().issue(COMPLETE_INPUT);
-          currentContext.inputDriver().issue(SUBMIT_INPUT);
         }
         break;
       case CANCEL:

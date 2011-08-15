@@ -64,7 +64,7 @@ public class BaseDefinitionRepository implements DefinitionRepository {
         }
       }
 
-      public boolean isCompleteFor(final Input input) {
+      public boolean isCompleteFor(final InputEventInContext event) {
         return false;
       }
 
@@ -157,8 +157,8 @@ public class BaseDefinitionRepository implements DefinitionRepository {
       }
     }
 
-    public boolean isCompleteFor(final Input input) {
-      return match(input).isExact();
+    public boolean isCompleteFor(final InputEventInContext event) {
+      return match(event.input()).isExact();
     }
 
     public Task createTask(final InputEventInContext event) {

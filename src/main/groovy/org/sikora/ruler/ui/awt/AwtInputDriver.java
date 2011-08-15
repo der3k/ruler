@@ -52,10 +52,6 @@ public class AwtInputDriver implements KeyListener, InputDriver {
         inputField.set(input);
         inputField.set(hints);
         break;
-      case COMPLETE_INPUT:
-        hints.select(0);
-        dispatchEventFor(COMPLETE_INPUT);
-        break;
     }
     dispatchEventFor(action);
   }
@@ -126,6 +122,7 @@ public class AwtInputDriver implements KeyListener, InputDriver {
         consumeKeyEventAndDispatchCommand(event, COMPLETE_INPUT);
         break;
       case VK_ENTER:
+        hints.select(0);
         consumeKeyEventAndDispatchCommand(event, SUBMIT_INPUT);
         break;
     }
