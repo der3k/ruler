@@ -6,10 +6,10 @@ import org.sikora.ruler.model.input.Hints
 import org.sikora.ruler.model.input.Hints.Item
 import org.sikora.ruler.model.input.Input
 import org.sikora.ruler.model.input.InputDriver
+import spock.lang.Ignore
 import spock.lang.Specification
 import static java.awt.event.KeyEvent.*
 import static org.sikora.ruler.model.input.InputDriver.Command.*
-import spock.lang.Ignore
 
 /**
  * User: der3k
@@ -28,23 +28,23 @@ public class AwtInputDriverTest extends Specification {
 
   def 'sets input'() {
   when:
-    driver.set(Input.of('task'))
+    driver.issue(UPDATE_INPUT, Input.of('task'))
   then:
     inputField.input() == Input.of('task')
     1 * handler.dispatch({ it.command() == UPDATE_INPUT })
   }
 
   def 'void input change is not propagated'() {
-    driver.set(Input.of('task'))
+    driver.issue(UPDATE_INPUT, Input.of('task'))
   when:
-    driver.set(Input.of('task'))
+    driver.issue(UPDATE_INPUT, Input.of('task'))
   then:
     0 * handler.dispatch(_)
   }
 
   def 'sets hints'() {
   when:
-    driver.set(new Hints([new Item('item')]))
+    driver.issue(UPDATE_HINTS, new Hints([new Item('item')]))
   then:
     hintsWindow.textArea.getText().contains('item')
     1 * handler.dispatch({ it.command() == UPDATE_HINTS })
@@ -76,7 +76,7 @@ public class AwtInputDriverTest extends Specification {
   }
 
   def 'propagates RESET_INPUT command'() {
-    driver.set(Input.of('task'))
+    driver.issue(UPDATE_INPUT, Input.of('task'))
   when:
     driver.issue(RESET_INPUT)
   then:
@@ -106,7 +106,7 @@ public class AwtInputDriverTest extends Specification {
 
   def '1-9 INPUT_COMPLETE command selects indexed hint'() {
     def item2 = new Item('item2')
-    driver.set(new Hints([new Item('item1'), item2]))
+    driver.issue(UPDATE_HINTS, new Hints([new Item('item1'), item2]))
     def event = Mock(KeyEvent)
   when:
     event.getKeyCode() >> VK_2
@@ -119,7 +119,7 @@ public class AwtInputDriverTest extends Specification {
   def 'TAB INPUT_COMPLETE command selects the first hint'() {
     def item1 = new Item('item1')
     def item2 = new Item('item2')
-    driver.set(new Hints([item1, item2]))
+    driver.issue(UPDATE_HINTS, new Hints([item1, item2]))
     def event = Mock(KeyEvent)
   when:
     event.getKeyCode() >> VK_TAB
@@ -137,5 +137,5 @@ public class AwtInputDriverTest extends Specification {
   then:
     1 * handler.dispatch({ it.command() == SUBMIT_INPUT })
   }
-  
+
 }

@@ -5,25 +5,13 @@ package org.sikora.ruler.model.input;
  */
 public interface InputDriver {
   /**
-   * Sets input of the device.
-   *
-   * @param input new input value
-   */
-  public void set(Input input);
-
-  /**
-   * Sets hints of the input device.
-   *
-   * @param hints new hints
-   */
-  public void set(Hints hints);
-
-  /**
    * Issues command to the input device.
    *
    * @param command command to be issued
    */
-  public void issue(Command command);
+  public void issue(final Command command);
+  public void issue(final Command command, final Input input);
+  public void issue(final Command command, final Hints hints);
 
   /**
    * Adds handler that would dispatch driver events.

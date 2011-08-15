@@ -1,16 +1,13 @@
 package org.sikora.ruler.task.impl;
 
 import com.melloware.jintellitype.JIntellitype;
-import org.sikora.ruler.context.Context;
 import org.sikora.ruler.context.InputEventInContext;
 import org.sikora.ruler.model.input.Hints;
 import org.sikora.ruler.model.input.Input;
-import org.sikora.ruler.model.input.InputDriver;
 import org.sikora.ruler.task.Definition;
 import org.sikora.ruler.task.DefinitionRepository;
 import org.sikora.ruler.task.Result;
 import org.sikora.ruler.task.Task;
-import org.sikora.ruler.ui.awt.AwtResultWindow;
 
 import java.util.*;
 
@@ -52,18 +49,18 @@ public class BaseDefinitionRepository implements DefinitionRepository {
 
       public void onInputUpdate(final InputEventInContext event) {
         if (partialMatches.size() == 0) {
-          event.inputDriver().set(Hints.NONE);
+          event.inputDriver().issue(UPDATE_HINTS, Hints.NONE);
           return;
         }
         final ArrayList<Hints.Item> items = new ArrayList<Hints.Item>();
         for (Match match : partialMatches)
           items.add(new Hints.Item(match.definition().name()));
-        event.inputDriver().set(new Hints(items));
+        event.inputDriver().issue(UPDATE_HINTS, new Hints(items));
       }
 
       public void onCompleteInput(final InputEventInContext event) {
         if (event.hint() != Hints.Item.NONE) {
-          event.inputDriver().set(Input.of(event.hint().toString() + ' '));
+          event.inputDriver().issue(UPDATE_INPUT, Input.of(event.hint().toString() + ' '));
         }
       }
 
@@ -109,7 +106,7 @@ public class BaseDefinitionRepository implements DefinitionRepository {
     });
     definitions.add(new DefinitionHelper("notify") {
     });
-    definitions.add(new DefinitionHelper("minimize"){
+    definitions.add(new DefinitionHelper("minimize") {
       @Override
       public Task createTask(final InputEventInContext event) {
         return new Task() {
@@ -151,12 +148,12 @@ public class BaseDefinitionRepository implements DefinitionRepository {
     }
 
     public void onInputUpdate(final InputEventInContext event) {
-      event.inputDriver().set(Hints.NONE);
+      event.inputDriver().issue(UPDATE_HINTS, Hints.NONE);
     }
 
     public void onCompleteInput(final InputEventInContext event) {
       if (event.hint() != Hints.Item.NONE) {
-        event.inputDriver().set(Input.of(event.hint().toString() + ' '));
+        event.inputDriver().issue(UPDATE_INPUT, Input.of(event.hint().toString() + ' '));
       }
     }
 

@@ -38,18 +38,6 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     inputField = inputWindow;
   }
 
-  public void set(final Input input) {
-    inputField.set(input);
-    Input.Update update = this.input.updateTo(input);
-    propagateInputUpdate(update);
-  }
-
-  public void set(final Hints hints) {
-    this.hints = hints;
-    inputField.set(hints);
-    dispatchEventFor(UPDATE_HINTS);
-  }
-
   public void issue(final Command command) {
     switch (command) {
       case FOCUS_INPUT:
@@ -66,6 +54,22 @@ public class AwtInputDriver implements KeyListener, InputDriver {
         break;
     }
     dispatchEventFor(command);
+  }
+
+  public void issue(final Command command, final Input input) {
+    inputField.set(input);
+    Input.Update update = this.input.updateTo(input);
+    propagateInputUpdate(update);
+    if (UPDATE_INPUT != command)
+      dispatchEventFor(command);
+  }
+
+  public void issue(final Command command, final Hints hints) {
+    this.hints = hints;
+    inputField.set(hints);
+    dispatchEventFor(UPDATE_HINTS);
+    if (UPDATE_HINTS != command)
+      dispatchEventFor(command);
   }
 
   public void addHandler(final Handler handler) {
