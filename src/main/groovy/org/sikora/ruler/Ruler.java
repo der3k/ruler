@@ -2,6 +2,9 @@ package org.sikora.ruler;
 
 import com.melloware.jintellitype.HotkeyListener;
 import com.melloware.jintellitype.JIntellitype;
+import org.sikora.ruler.context.Context;
+import org.sikora.ruler.context.ContextProvider;
+import org.sikora.ruler.context.WindowsContextProvider;
 import org.sikora.ruler.model.input.InputDriver;
 import org.sikora.ruler.model.input.InputDriver.Event;
 import org.sikora.ruler.task.*;
@@ -17,9 +20,11 @@ import static org.sikora.ruler.model.input.InputDriver.Command.*;
  * global hot key.
  */
 public class Ruler implements InputDriver.Handler, HotkeyListener {
-  final InputDriver inputDriver;
-  final DraftFactory draftFactory;
-  final AwtResultWindow resultWindow;
+  private final InputDriver inputDriver;
+  private final DraftFactory draftFactory;
+  private final AwtResultWindow resultWindow;
+  private final ContextProvider contextProvider;
+  private Context currentContext;
 
   /**
    * Configures global key hooks and wires Ruler to it. It uses AwtInputDriver for receiving users input.
@@ -27,10 +32,10 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
    * @param args ignored
    */
   public static void main(final String[] args) {
-    InputDriver driver = new AwtInputDriver();
+    final UiConfiguration uiConfiguration = new UiConfiguration(new AwtInputDriver(), new AwtResultWindow());
     DefinitionRepository definitionRepository = new BaseDefinitionRepository();
-    Ruler ruler = new Ruler(driver, definitionRepository, new AwtResultWindow());
-    driver.addHandler(ruler);
+    Ruler ruler = new Ruler(uiConfiguration, definitionRepository, new WindowsContextProvider());
+    uiConfiguration.driver().addHandler(ruler);
 
     JIntellitype.setLibraryLocation("../lib/JIntellitype64.dll");
     JIntellitype hook = JIntellitype.getInstance();
@@ -39,10 +44,12 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
     hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ');
   }
 
-  private Ruler(final InputDriver inputDriver, final DefinitionRepository definitionRepository, final AwtResultWindow resultWindow) {
-    this.inputDriver = inputDriver;
+  private Ruler(final UiConfiguration uiConfiguration, final DefinitionRepository definitionRepository, final ContextProvider contextProvider) {
+    this.inputDriver = uiConfiguration.driver();
     this.draftFactory = new DefinitionDraftFactory(definitionRepository);
-    this.resultWindow = resultWindow;
+    this.resultWindow = uiConfiguration.resultWindow();
+    this.contextProvider = contextProvider;
+    this.currentContext = contextProvider.currentContext();
   }
 
   /**
@@ -52,7 +59,7 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
    * @param event input driver event
    */
   public void dispatch(final Event event) {
-    final Draft draft = draftFactory.draftFrom(event);
+    final Draft draft = draftFactory.draftFrom(event, currentContext);
     switch (event.command()) {
       case SUBMIT_INPUT:
         if (draft.isTaskComplete()) {
@@ -76,6 +83,7 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
   public void onHotKey(final int hook) {
     switch (hook) {
       case 1:
+        currentContext = contextProvider.currentContext();
         inputDriver.issue(FOCUS_INPUT);
         break;
       case 2:
@@ -86,5 +94,22 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
     }
   }
 
+  private static class UiConfiguration {
+    private final InputDriver inputDriver;
+    private final AwtResultWindow resultWindow;
+
+    private UiConfiguration(final InputDriver inputDriver, final AwtResultWindow resultWindow) {
+      this.inputDriver = inputDriver;
+      this.resultWindow = resultWindow;
+    }
+
+    public InputDriver driver() {
+      return inputDriver;
+    }
+
+    public AwtResultWindow resultWindow() {
+      return resultWindow;
+    }
+  }
 }
 

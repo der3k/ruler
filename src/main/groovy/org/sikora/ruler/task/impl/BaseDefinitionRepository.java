@@ -1,6 +1,7 @@
 package org.sikora.ruler.task.impl;
 
 import com.melloware.jintellitype.JIntellitype;
+import org.sikora.ruler.context.Context;
 import org.sikora.ruler.model.input.Hints;
 import org.sikora.ruler.model.input.Input;
 import org.sikora.ruler.model.input.InputDriver;
@@ -48,7 +49,7 @@ public class BaseDefinitionRepository implements DefinitionRepository {
         return "allTasks";
       }
 
-      public void onInputUpdate(final InputDriver.Event event) {
+      public void onInputUpdate(final InputDriver.Event event, final Context context) {
         if (partialMatches.size() == 0) {
           event.driver().set(Hints.NONE);
           return;
@@ -59,7 +60,7 @@ public class BaseDefinitionRepository implements DefinitionRepository {
         event.driver().set(new Hints(items));
       }
 
-      public void onCompleteInput(final InputDriver.Event event) {
+      public void onCompleteInput(final InputDriver.Event event, final Context context) {
         if (event.hint() != Hints.Item.NONE) {
           event.driver().set(Input.of(event.hint().toString() + ' '));
         }
@@ -69,7 +70,7 @@ public class BaseDefinitionRepository implements DefinitionRepository {
         return false;
       }
 
-      public Task createTask(final InputDriver.Event event) {
+      public Task createTask(final InputDriver.Event event, final Context context) {
         throw new IllegalArgumentException("not supported operation");
       }
     };
@@ -81,7 +82,7 @@ public class BaseDefinitionRepository implements DefinitionRepository {
   public BaseDefinitionRepository() {
     definitions.add(new DefinitionHelper("now") {
       @Override
-      public Task createTask(final InputDriver.Event event) {
+      public Task createTask(final InputDriver.Event event, final Context context) {
         return new Task() {
           public Result performAction() {
             event.driver().issue(HIDE_INPUT);
@@ -97,7 +98,7 @@ public class BaseDefinitionRepository implements DefinitionRepository {
     });
     definitions.add(new DefinitionHelper("quit") {
       @Override
-      public Task createTask(final InputDriver.Event event) {
+      public Task createTask(final InputDriver.Event event, final Context context) {
         JIntellitype.getInstance().cleanUp();
         System.exit(0);
         return null;
@@ -106,6 +107,23 @@ public class BaseDefinitionRepository implements DefinitionRepository {
     definitions.add(new DefinitionHelper("quote") {
     });
     definitions.add(new DefinitionHelper("notify") {
+    });
+    definitions.add(new DefinitionHelper("minimize"){
+      @Override
+      public Task createTask(final InputDriver.Event event, final Context context) {
+        return new Task() {
+          public Result performAction() {
+            event.driver().issue(HIDE_INPUT);
+            event.driver().issue(RESET_INPUT);
+            context.foregroundWindow().minimize();
+            return new Result() {
+              public void showOn(final AwtResultWindow resultWindow) {
+                // display no result
+              }
+            };
+          }
+        };
+      }
     });
   }
 
@@ -131,11 +149,11 @@ public class BaseDefinitionRepository implements DefinitionRepository {
       return name;
     }
 
-    public void onInputUpdate(final InputDriver.Event event) {
+    public void onInputUpdate(final InputDriver.Event event, final Context context) {
       event.driver().set(Hints.NONE);
     }
 
-    public void onCompleteInput(final InputDriver.Event event) {
+    public void onCompleteInput(final InputDriver.Event event, final Context context) {
       if (event.hint() != Hints.Item.NONE) {
         event.driver().set(Input.of(event.hint().toString() + ' '));
       }
@@ -145,7 +163,7 @@ public class BaseDefinitionRepository implements DefinitionRepository {
       return match(input).isExact();
     }
 
-    public Task createTask(final InputDriver.Event event) {
+    public Task createTask(final InputDriver.Event event, final Context context) {
       return new Task() {
         public Result performAction() {
           return new Result() {
