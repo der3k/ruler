@@ -1,19 +1,16 @@
 package org.sikora.ruler.task;
 
-import org.sikora.ruler.context.Context;
-import org.sikora.ruler.model.input.InputDriver;
+import org.sikora.ruler.context.InputEventInContext;
 
 /**
  * Creates drafts from input driver events.
  */
 public interface DraftFactory {
   /**
-   * Returns task draft for input driver event.
+   * Returns task draft for input driver event and context.
    *
-   *
-   * @param event input driver event
-   * @param context event context
+   * @param inputEventInContext input driver event
    * @return task draft
    */
-  Draft draftFrom(final InputDriver.Event event, final Context context);
+  Draft draftFrom(final InputEventInContext inputEventInContext);
 }

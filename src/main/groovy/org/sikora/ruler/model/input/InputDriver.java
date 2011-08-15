@@ -44,27 +44,21 @@ public interface InputDriver {
    * registered handlers after input command occurs.
    */
   public class Event {
-    private final InputDriver driver;
-    private final InputCommand command;
+    private final Command command;
+    private final Input input;
+    private final Hints.Item hint;
 
     /**
-     * Creates new event for driver with given input command.
+     * Creates new event from command, input and hint.
      *
-     * @param driver
-     * @param command
+     * @param command driver command
+     * @param input   input value
+     * @param hint    input hint
      */
-    public Event(final InputDriver driver, final InputCommand command) {
-      this.driver = driver;
+    public Event(final Command command, final Input input, final Hints.Item hint) {
       this.command = command;
-    }
-
-    /**
-     * Returns originating input driver.
-     *
-     * @return driver
-     */
-    public InputDriver driver() {
-      return driver;
+      this.input = input;
+      this.hint = hint;
     }
 
     /**
@@ -73,7 +67,7 @@ public interface InputDriver {
      * @return command
      */
     public Command command() {
-      return command.command();
+      return command;
     }
 
     /**
@@ -82,7 +76,7 @@ public interface InputDriver {
      * @return input
      */
     public Input input() {
-      return command.input();
+      return input;
     }
 
     /**
@@ -91,51 +85,12 @@ public interface InputDriver {
      * @return hint
      */
     public Hints.Item hint() {
-      return command.hint();
-    }
-
-    @Override
-    public String toString() {
-      return String.format("Event{%s}", command);
-    }
-  }
-
-  /**
-   * Value object encapsulating driver state and command.
-   */
-  public class InputCommand {
-    private final Command command;
-    private final Input input;
-    private final Hints.Item hint;
-
-    /**
-     * Creates new input command from actual command, input and hint.
-     *
-     * @param command
-     * @param input
-     * @param hint
-     */
-    public InputCommand(final Command command, final Input input, final Hints.Item hint) {
-      this.command = command;
-      this.input = input;
-      this.hint = hint;
-    }
-
-    public Command command() {
-      return command;
-    }
-
-    public Input input() {
-      return input;
-    }
-
-    public Hints.Item hint() {
       return hint;
     }
 
     @Override
     public String toString() {
-      return String.format("%s['%s' << '%s']", command, input, hint);
+      return String.format("Event{%s['%s' << '%s']}", command, input, hint);
     }
   }
 

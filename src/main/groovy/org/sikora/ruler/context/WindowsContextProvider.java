@@ -3,6 +3,8 @@ package org.sikora.ruler.context;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.win32.StdCallLibrary;
+import org.sikora.ruler.model.input.InputDriver;
+import org.sikora.ruler.ui.awt.AwtResultWindow;
 
 import static com.sun.jna.platform.win32.WinDef.*;
 import static com.sun.jna.platform.win32.WinUser.*;
@@ -11,6 +13,13 @@ import static com.sun.jna.platform.win32.WinUser.*;
  * Microsoft Windows context provider utilizing JNA library.
  */
 public class WindowsContextProvider implements ContextProvider {
+  private final InputDriver inputDriver;
+  private final AwtResultWindow resultWindow;
+
+  public WindowsContextProvider(final InputDriver inputDriver, final AwtResultWindow resultWindow) {
+    this.inputDriver = inputDriver;
+    this.resultWindow = resultWindow;
+  }
 
   public Context currentContext() {
     return new Context() {
@@ -25,6 +34,14 @@ public class WindowsContextProvider implements ContextProvider {
             User32Window.INSTANCE.ShowWindow(active, User32Window.SW_MINIMIZE);
           }
         };
+      }
+
+      public InputDriver inputDriver() {
+        return inputDriver;
+      }
+
+      public AwtResultWindow resultWindow() {
+        return resultWindow;
       }
     };
   }

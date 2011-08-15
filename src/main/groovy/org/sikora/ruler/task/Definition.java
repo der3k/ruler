@@ -1,9 +1,7 @@
 package org.sikora.ruler.task;
 
-import org.omg.PortableInterceptor.NON_EXISTENT;
-import org.sikora.ruler.context.Context;
+import org.sikora.ruler.context.InputEventInContext;
 import org.sikora.ruler.model.input.Input;
-import org.sikora.ruler.model.input.InputDriver;
 
 /**
  * Task definition.
@@ -28,18 +26,16 @@ public interface Definition {
   /**
    * Responds to input update event.
    *
-   * @param event input update event.
-   * @param context event context
+   * @param event input event in context
    */
-  void onInputUpdate(final InputDriver.Event event, final Context context);
+  void onInputUpdate(final InputEventInContext event);
 
   /**
    * Responds to complete input event.
    *
-   * @param event complete input event
-   * @param context event context
+   * @param event complete input event in context
    */
-  void onCompleteInput(final InputDriver.Event event, final Context context);
+  void onCompleteInput(final InputEventInContext event);
 
   /**
    * Returns true if the definition is complete for given input.
@@ -52,12 +48,11 @@ public interface Definition {
   /**
    * Creates new task from event.
    *
-   * @param event input driver event
-   * @param context
+   * @param event input driver event in context
    * @return new task as defined by event's input
    * @throws IllegalArgumentException when event input does not define task completely
    */
-  Task createTask(InputDriver.Event event, final Context context);
+  Task createTask(final InputEventInContext event);
 
   public final class Match implements Comparable<Match> {
     public static final int NONE = 0;

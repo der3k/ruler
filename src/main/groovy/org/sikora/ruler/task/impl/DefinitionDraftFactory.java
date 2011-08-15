@@ -1,7 +1,6 @@
 package org.sikora.ruler.task.impl;
 
-import org.sikora.ruler.context.Context;
-import org.sikora.ruler.model.input.InputDriver;
+import org.sikora.ruler.context.InputEventInContext;
 import org.sikora.ruler.task.*;
 
 /**
@@ -21,20 +20,17 @@ public class DefinitionDraftFactory implements DraftFactory {
    * does not find definition for the event's input it returns DEFINITIONS_DRAFT
    * that provides definition hints for available tasks.
    *
-   *
-   * @param event input driver event
-   * @param context event context
+   * @param event input driver event in context
    * @return task draft created by task definition, or DEFINITIONS_DRAFT
    */
-  public Draft draftFrom(final InputDriver.Event event, final Context context) {
+  public Draft draftFrom(final InputEventInContext event) {
     final Definition definition = definitionRepository.find(event.input());
-    final String text = event.input().text();
     switch (event.command()) {
       case UPDATE_INPUT:
-        definition.onInputUpdate(event, context);
+        definition.onInputUpdate(event);
         break;
       case COMPLETE_INPUT:
-        definition.onCompleteInput(event, context);
+        definition.onCompleteInput(event);
         break;
     }
     return new Draft() {
@@ -44,7 +40,7 @@ public class DefinitionDraftFactory implements DraftFactory {
       }
 
       public Task toTask() {
-        return definition.createTask(event, context);
+        return definition.createTask(event);
       }
     };
   }

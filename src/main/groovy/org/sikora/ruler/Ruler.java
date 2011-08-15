@@ -4,6 +4,7 @@ import com.melloware.jintellitype.HotkeyListener;
 import com.melloware.jintellitype.JIntellitype;
 import org.sikora.ruler.context.Context;
 import org.sikora.ruler.context.ContextProvider;
+import org.sikora.ruler.context.InputEventInContext;
 import org.sikora.ruler.context.WindowsContextProvider;
 import org.sikora.ruler.model.input.InputDriver;
 import org.sikora.ruler.model.input.InputDriver.Event;
@@ -20,9 +21,7 @@ import static org.sikora.ruler.model.input.InputDriver.Command.*;
  * global hot key.
  */
 public class Ruler implements InputDriver.Handler, HotkeyListener {
-  private final InputDriver inputDriver;
   private final DraftFactory draftFactory;
-  private final AwtResultWindow resultWindow;
   private final ContextProvider contextProvider;
   private Context currentContext;
 
@@ -32,10 +31,11 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
    * @param args ignored
    */
   public static void main(final String[] args) {
-    final UiConfiguration uiConfiguration = new UiConfiguration(new AwtInputDriver(), new AwtResultWindow());
-    DefinitionRepository definitionRepository = new BaseDefinitionRepository();
-    Ruler ruler = new Ruler(uiConfiguration, definitionRepository, new WindowsContextProvider());
-    uiConfiguration.driver().addHandler(ruler);
+    final AwtInputDriver inputDriver = new AwtInputDriver();
+    final WindowsContextProvider contextProvider = new WindowsContextProvider(inputDriver, new AwtResultWindow());
+    final DefinitionRepository definitionRepository = new BaseDefinitionRepository();
+    Ruler ruler = new Ruler(contextProvider, definitionRepository);
+    inputDriver.addHandler(ruler);
 
     JIntellitype.setLibraryLocation("../lib/JIntellitype64.dll");
     JIntellitype hook = JIntellitype.getInstance();
@@ -44,12 +44,10 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
     hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ');
   }
 
-  private Ruler(final UiConfiguration uiConfiguration, final DefinitionRepository definitionRepository, final ContextProvider contextProvider) {
-    this.inputDriver = uiConfiguration.driver();
-    this.draftFactory = new DefinitionDraftFactory(definitionRepository);
-    this.resultWindow = uiConfiguration.resultWindow();
+  private Ruler(final ContextProvider contextProvider, DefinitionRepository definitionRepository) {
     this.contextProvider = contextProvider;
     this.currentContext = contextProvider.currentContext();
+    this.draftFactory = new DefinitionDraftFactory(definitionRepository);
   }
 
   /**
@@ -59,18 +57,19 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
    * @param event input driver event
    */
   public void dispatch(final Event event) {
-    final Draft draft = draftFactory.draftFrom(event, currentContext);
+    final InputEventInContext eventInContext = new InputEventInContext(event, currentContext);
+    final Draft draft = draftFactory.draftFrom(eventInContext);
     switch (event.command()) {
       case SUBMIT_INPUT:
         if (draft.isTaskComplete()) {
           final Task task = draft.toTask();
           final Result result = task.performAction();
-          result.showOn(resultWindow);
+          result.display();
         }
         break;
       case CANCEL:
-        event.driver().issue(HIDE_INPUT);
-        event.driver().issue(RESET_INPUT);
+        currentContext.inputDriver().issue(HIDE_INPUT);
+        currentContext.inputDriver().issue(RESET_INPUT);
         break;
     }
   }
@@ -81,35 +80,18 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
    * @param hook hook id
    */
   public void onHotKey(final int hook) {
+    currentContext = contextProvider.currentContext();
     switch (hook) {
       case 1:
-        currentContext = contextProvider.currentContext();
-        inputDriver.issue(FOCUS_INPUT);
+        currentContext.inputDriver().issue(FOCUS_INPUT);
         break;
       case 2:
-        resultWindow.display();
+        currentContext.resultWindow().display();
         break;
       default:
         break;
     }
   }
 
-  public static class UiConfiguration {
-    private final InputDriver inputDriver;
-    private final AwtResultWindow resultWindow;
-
-    private UiConfiguration(final InputDriver inputDriver, final AwtResultWindow resultWindow) {
-      this.inputDriver = inputDriver;
-      this.resultWindow = resultWindow;
-    }
-
-    public InputDriver driver() {
-      return inputDriver;
-    }
-
-    public AwtResultWindow resultWindow() {
-      return resultWindow;
-    }
-  }
 }
 

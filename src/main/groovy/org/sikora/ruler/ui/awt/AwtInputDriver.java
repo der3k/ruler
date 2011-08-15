@@ -154,8 +154,7 @@ public class AwtInputDriver implements KeyListener, InputDriver {
   }
 
   private Event eventFor(Command command) {
-    final InputCommand inputCommand = new InputCommand(command, input, hints.selected());
-    return new Event(this, inputCommand);
+    return new Event(command, input, hints.selected());
   }
 
   private boolean isCompleteKey(final char key) {
