@@ -3,10 +3,11 @@ package org.sikora.ruler;
 
 import org.sikora.ruler.context.ContextProvider
 import org.sikora.ruler.model.input.InputDriver
-import org.sikora.ruler.model.input.InputDriver.Command
+
 import org.sikora.ruler.ui.awt.AwtResultWindow
 import spock.lang.Specification
 import org.sikora.ruler.context.Context
+import org.sikora.ruler.model.input.InputDriver.Action
 
 /**
  * User: der3k
@@ -25,7 +26,7 @@ public class RulerTest extends Specification {
   when:
     ruler.onHotKey(1)
   then:
-    1 * driver.issue(Command.FOCUS_INPUT)
+    1 * driver.issue(Action.FOCUS_INPUT)
   }
 
   def 'second global hotkey shows result window'() {

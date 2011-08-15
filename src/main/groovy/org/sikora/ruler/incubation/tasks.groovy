@@ -1,10 +1,10 @@
 package org.sikora.ruler.incubation
 
 import org.sikora.ruler.model.input.Hints
-import org.sikora.ruler.model.input.Input
+
 import org.sikora.ruler.model.input.InputDriver
 import org.sikora.ruler.model.input.InputDriver.Event
-import static org.sikora.ruler.model.input.InputDriver.Command.*
+import static org.sikora.ruler.model.input.InputDriver.Action.*
 import org.sikora.ruler.ui.awt.AwtResultWindow
 
 class Draft {
@@ -35,7 +35,7 @@ def handler = new InputDriver.Handler() {
 
   void dispatch(Event event) {
     def draft = draftFactory.draftFor(event)
-    switch (event.command()) {
+    switch (event.action()) {
       case SUBMIT_INPUT:
         if (draft.isComplete()) {
           def task = draft.toTask()

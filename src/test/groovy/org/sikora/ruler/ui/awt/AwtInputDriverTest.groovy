@@ -9,7 +9,7 @@ import org.sikora.ruler.model.input.InputDriver
 import spock.lang.Ignore
 import spock.lang.Specification
 import static java.awt.event.KeyEvent.*
-import static org.sikora.ruler.model.input.InputDriver.Command.*
+import static org.sikora.ruler.model.input.InputDriver.Action.*
 
 /**
  * User: der3k
@@ -31,7 +31,7 @@ public class AwtInputDriverTest extends Specification {
     driver.issue(UPDATE_INPUT, Input.of('task'))
   then:
     inputField.input() == Input.of('task')
-    1 * handler.dispatch({ it.command() == UPDATE_INPUT })
+    1 * handler.dispatch({ it.action() == UPDATE_INPUT })
   }
 
   def 'void input change is not propagated'() {
@@ -47,14 +47,14 @@ public class AwtInputDriverTest extends Specification {
     driver.issue(UPDATE_HINTS, new Hints([new Item('item')]))
   then:
     hintsWindow.textArea.getText().contains('item')
-    1 * handler.dispatch({ it.command() == UPDATE_HINTS })
+    1 * handler.dispatch({ it.action() == UPDATE_HINTS })
   }
 
   def 'issues command'() {
   when:
     driver.issue(UPDATE_INPUT)
   then:
-    1 * handler.dispatch({ it.command() == UPDATE_INPUT })
+    1 * handler.dispatch({ it.action() == UPDATE_INPUT })
   }
 
   // TODO test the functionality without actual window
@@ -90,7 +90,7 @@ public class AwtInputDriverTest extends Specification {
     event.getKeyCode() >> VK_ESCAPE
     driver.keyPressed(event)
   then:
-    1 * handler.dispatch({ it.command() == CANCEL })
+    1 * handler.dispatch({ it.action() == CANCEL })
   }
 
   def 'TAB and 1-9 keys propagates as INPUT_COMPLETE command'() {
@@ -99,7 +99,7 @@ public class AwtInputDriverTest extends Specification {
     event.getKeyCode() >> code
     driver.keyPressed(event)
   then:
-    1 * handler.dispatch({ it.command() == COMPLETE_INPUT })
+    1 * handler.dispatch({ it.action() == COMPLETE_INPUT })
   where:
     code << [VK_TAB, VK_1, VK_2, VK_3, VK_4, VK_5, VK_6, VK_7, VK_8, VK_9]
   }
@@ -135,7 +135,7 @@ public class AwtInputDriverTest extends Specification {
     event.getKeyCode() >> VK_ENTER
     driver.keyPressed(event)
   then:
-    1 * handler.dispatch({ it.command() == SUBMIT_INPUT })
+    1 * handler.dispatch({ it.action() == SUBMIT_INPUT })
   }
 
 }

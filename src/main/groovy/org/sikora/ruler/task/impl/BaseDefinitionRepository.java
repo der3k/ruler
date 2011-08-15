@@ -11,7 +11,7 @@ import org.sikora.ruler.task.Task;
 
 import java.util.*;
 
-import static org.sikora.ruler.model.input.InputDriver.Command.*;
+import static org.sikora.ruler.model.input.InputDriver.Action.*;
 
 /**
  * Base definition repository, returning partially matched definitions

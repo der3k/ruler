@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.awt.event.KeyEvent.*;
-import static org.sikora.ruler.model.input.InputDriver.Command.*;
+import static org.sikora.ruler.model.input.InputDriver.Action.*;
 
 /**
  * AWT implementation of the input driver. It utilizes KeyListener to access AWT key events.
@@ -38,8 +38,8 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     inputField = inputWindow;
   }
 
-  public void issue(final Command command) {
-    switch (command) {
+  public void issue(final Action action) {
+    switch (action) {
       case FOCUS_INPUT:
         inputField.focus();
         break;
@@ -52,24 +52,28 @@ public class AwtInputDriver implements KeyListener, InputDriver {
         inputField.set(input);
         inputField.set(hints);
         break;
+      case COMPLETE_INPUT:
+        hints.select(0);
+        dispatchEventFor(COMPLETE_INPUT);
+        break;
     }
-    dispatchEventFor(command);
+    dispatchEventFor(action);
   }
 
-  public void issue(final Command command, final Input input) {
+  public void issue(final Action action, final Input input) {
     inputField.set(input);
     Input.Update update = this.input.updateTo(input);
     propagateInputUpdate(update);
-    if (UPDATE_INPUT != command)
-      dispatchEventFor(command);
+    if (UPDATE_INPUT != action)
+      dispatchEventFor(action);
   }
 
-  public void issue(final Command command, final Hints hints) {
+  public void issue(final Action action, final Hints hints) {
     this.hints = hints;
     inputField.set(hints);
     dispatchEventFor(UPDATE_HINTS);
-    if (UPDATE_HINTS != command)
-      dispatchEventFor(command);
+    if (UPDATE_HINTS != action)
+      dispatchEventFor(action);
   }
 
   public void addHandler(final Handler handler) {
@@ -137,13 +141,13 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     propagateInputUpdate(update);
   }
 
-  private void consumeKeyEventAndDispatchCommand(final KeyEvent event, final Command command) {
+  private void consumeKeyEventAndDispatchCommand(final KeyEvent event, final Action action) {
     event.consume();
-    dispatchEventFor(command);
+    dispatchEventFor(action);
   }
 
-  private void dispatchEventFor(final Command command) {
-    final Event event = eventFor(command);
+  private void dispatchEventFor(final Action action) {
+    final Event event = eventFor(action);
     LOGGER.debug("Dispatching {}", event);
     for (Handler handler : handlers)
       handler.dispatch(event);
@@ -157,8 +161,8 @@ public class AwtInputDriver implements KeyListener, InputDriver {
     }
   }
 
-  private Event eventFor(Command command) {
-    return new Event(command, input, hints.selected());
+  private Event eventFor(Action action) {
+    return new Event(action, input, hints.selected());
   }
 
   private boolean isCompleteKey(final char key) {

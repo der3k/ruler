@@ -14,7 +14,7 @@ import org.sikora.ruler.task.impl.DefinitionDraftFactory;
 import org.sikora.ruler.ui.awt.AwtInputDriver;
 import org.sikora.ruler.ui.awt.AwtResultWindow;
 
-import static org.sikora.ruler.model.input.InputDriver.Command.*;
+import static org.sikora.ruler.model.input.InputDriver.Action.*;
 
 /**
  * Input driver handler. It provides context based hints and executes recognized tasks. It is activated by
@@ -59,12 +59,15 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
   public void dispatch(final Event event) {
     final InputEventInContext eventInContext = new InputEventInContext(event, currentContext);
     final Draft draft = draftFactory.draftFrom(eventInContext);
-    switch (event.command()) {
+    switch (event.action()) {
       case SUBMIT_INPUT:
         if (draft.isTaskComplete()) {
           final Task task = draft.toTask();
           final Result result = task.performAction();
           result.display();
+        } else {
+          currentContext.inputDriver().issue(COMPLETE_INPUT);
+          currentContext.inputDriver().issue(SUBMIT_INPUT);
         }
         break;
       case CANCEL:

@@ -17,8 +17,8 @@ public final class InputEventInContext implements Context {
     this.context = context;
   }
 
-  public InputDriver.Command command() {
-    return event.command();
+  public InputDriver.Action command() {
+    return event.action();
   }
 
   public Input input() {

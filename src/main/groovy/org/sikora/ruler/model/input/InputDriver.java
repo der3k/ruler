@@ -5,13 +5,15 @@ package org.sikora.ruler.model.input;
  */
 public interface InputDriver {
   /**
-   * Issues command to the input device.
+   * Issues action to the input device.
    *
-   * @param command command to be issued
+   * @param action action to be issued
    */
-  public void issue(final Command command);
-  public void issue(final Command command, final Input input);
-  public void issue(final Command command, final Hints hints);
+  public void issue(final Action action);
+
+  public void issue(final Action action, final Input input);
+
+  public void issue(final Action action, final Hints hints);
 
   /**
    * Adds handler that would dispatch driver events.
@@ -29,37 +31,37 @@ public interface InputDriver {
 
   /**
    * Value object encapsulating driver event. It would be passed to all
-   * registered handlers after input command occurs.
+   * registered handlers after input action occurs.
    */
   public class Event {
-    private final Command command;
+    private final Action action;
     private final Input input;
     private final Hints.Item hint;
 
     /**
-     * Creates new event from command, input and hint.
+     * Creates new event from action, input and hint.
      *
-     * @param command driver command
-     * @param input   input value
-     * @param hint    input hint
+     * @param action driver action
+     * @param input  input value
+     * @param hint   input hint
      */
-    public Event(final Command command, final Input input, final Hints.Item hint) {
-      this.command = command;
+    public Event(final Action action, final Input input, final Hints.Item hint) {
+      this.action = action;
       this.input = input;
       this.hint = hint;
     }
 
     /**
-     * Returns command that caused the event.
+     * Returns action that caused the event.
      *
      * @return command
      */
-    public Command command() {
-      return command;
+    public Action action() {
+      return action;
     }
 
     /**
-     * Returns driver input when the command was issued.
+     * Returns driver input when the action was issued.
      *
      * @return input
      */
@@ -68,7 +70,7 @@ public interface InputDriver {
     }
 
     /**
-     * Returns hint that was selected when the command was issued.
+     * Returns hint that was selected when the action was issued.
      *
      * @return hint
      */
@@ -78,14 +80,14 @@ public interface InputDriver {
 
     @Override
     public String toString() {
-      return String.format("Event{%s['%s' << '%s']}", command, input, hint);
+      return String.format("Event{%s['%s' << '%s']}", action, input, hint);
     }
   }
 
   /**
-   * Input driver commands.
+   * Input driver actions.
    */
-  public enum Command {
+  public enum Action { // TODO rename Action => Action
     RESET_INPUT, FOCUS_INPUT, UPDATE_INPUT, UPDATE_HINTS, CANCEL, COMPLETE_INPUT, SUBMIT_INPUT, HIDE_INPUT
   }
 
