@@ -5,6 +5,7 @@ import spock.lang.Specification
 import org.sikora.ruler.model.input.InputDriver
 import org.sikora.ruler.model.input.InputDriver.Command
 import org.sikora.ruler.ui.awt.AwtResultWindow
+import org.sikora.ruler.context.ContextProvider
 
 /**
  * User: der3k
@@ -15,7 +16,8 @@ public class RulerTest extends Specification {
 
   def 'first global hotkey enables input window'() {
     def driver = Mock(InputDriver)
-    def ruler = new Ruler(driver, null)
+    def ui = new Ruler.UiConfiguration(driver, null)
+    def ruler = new Ruler(ui, null, Mock(ContextProvider))
   when:
     ruler.onHotKey(1)
   then:
@@ -24,7 +26,8 @@ public class RulerTest extends Specification {
 
   def 'second global hotkey shows result window'() {
     def result = Mock(AwtResultWindow)
-    def ruler = new Ruler(null, result)
+    def ui = new Ruler.UiConfiguration(null, result)
+    def ruler = new Ruler(ui, null, Mock(ContextProvider))
   when:
     ruler.onHotKey(2)
   then:

@@ -94,7 +94,7 @@ public class Ruler implements InputDriver.Handler, HotkeyListener {
     }
   }
 
-  private static class UiConfiguration {
+  public static class UiConfiguration {
     private final InputDriver inputDriver;
     private final AwtResultWindow resultWindow;
 
