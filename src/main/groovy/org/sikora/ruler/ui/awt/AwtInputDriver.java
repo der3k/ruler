@@ -7,188 +7,91 @@ import org.sikora.ruler.model.input.InputField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.awt.event.KeyEvent.*;
-import static org.sikora.ruler.model.input.InputDriver.Action.*;
+import static org.sikora.ruler.model.input.InputDriver.Event.*;
 
 /**
  * AWT implementation of the input driver. It utilizes KeyListener to access AWT key events.
  */
-public class AwtInputDriver implements KeyListener, InputDriver {
+public class AwtInputDriver implements InputDriver {
   private static final Logger LOGGER = LoggerFactory.getLogger(AwtInputDriver.class);
-  private static final char COMPLETE_KEY_MIN = '1';
-  private static final char COMPLETE_KEY_MAX = '9';
 
   private final InputField inputField;
-  private Hints hints = Hints.NONE;
-  private final List<Handler> handlers = new ArrayList<Handler>();
   private Input input = Input.EMPTY;
+  private Hints hints = Hints.NONE;
+  private final List<Listener> listeners = new ArrayList<Listener>();
 
   /**
    * Creates new input driver. It uses AwtInputWindow for capturing key events.
+   * @param inputWindow
    */
-  public AwtInputDriver() {
-    final AwtInputWindow inputWindow = new AwtInputWindow();
-    inputWindow.addKeyListener(this);
-    inputWindow.set(input);
+  public AwtInputDriver(final AwtInputWindow inputWindow) {
+    inputWindow.addKeyListener(new AwtInputKeyListener(this));
     inputField = inputWindow;
   }
 
-  public void issue(final Action action) {
-    switch (action) {
-      case FOCUS_INPUT:
+  public void issue(final InputCommand command) {
+    LOGGER.debug("Issuing {}", command);
+    switch (command.command()) {
+      case UPDATE_FROM_FIELD:
+        updateInput(inputField.input());
+        break;
+      case UPDATE:
+        inputField.set(command.input());
+        updateInput(command.input());
+        break;
+      case HINT:
+        inputField.set(command.hints());
+        hints = command.hints();
+        break;
+      case COMPLETE:
+        hints.select(command.selectHint());
+        dispatchEvent(COMPLETE_ISSUED);
+        break;
+      case SUBMIT:
+        hints.select(command.selectHint());
+        dispatchEvent(SUBMIT_ISSUED);
+        break;
+      case CANCEL:
+        dispatchEvent(CANCEL_ISSUED);
+        break;
+      case FOCUS:
         inputField.focus();
         break;
-      case HIDE_INPUT:
+      case HIDE:
         inputField.hide();
         break;
-      case RESET_INPUT:
-        input = Input.EMPTY;
+      case RESET:
+        inputField.set(Input.EMPTY);
+        inputField.set(Hints.NONE);
         hints = Hints.NONE;
-        inputField.set(input);
-        inputField.set(hints);
+        input = Input.EMPTY;
         break;
     }
-    dispatchEventFor(action);
   }
 
-  public void issue(final Action action, final Input input) {
-    inputField.set(input);
-    Input.Update update = this.input.updateTo(input);
-    propagateInputUpdate(update);
-    if (UPDATE_INPUT != action)
-      dispatchEventFor(action);
-  }
-
-  public void issue(final Action action, final Hints hints) {
-    this.hints = hints;
-    inputField.set(hints);
-    dispatchEventFor(UPDATE_HINTS);
-    if (UPDATE_HINTS != action)
-      dispatchEventFor(action);
-  }
-
-  public void addHandler(final Handler handler) {
-    if (handler == null)
+  public void addListener(final Listener listener) {
+    if (listener == null)
       throw new IllegalArgumentException("listener cannot be null");
-    handlers.add(handler);
+    listeners.add(listener);
   }
 
-  public void removeHandler(final Handler handler) {
-    if (handler == null)
-      throw new IllegalArgumentException("listener to remove cannot be null");
-    handlers.remove(handler);
+  private void dispatchEvent(final Event event) {
+    final InputEvent inputEvent = new InputEvent(event, input, hints.selected());
+    LOGGER.debug("Dispatching {}", inputEvent);
+    for (Listener listener : listeners)
+      listener.dispatch(inputEvent);
   }
 
-  /**
-   * Consumes key event when complete key was typed (keys 1-9).
-   *
-   * @param event key event
-   */
-  public void keyTyped(final KeyEvent event) {
-    if (isCompleteKey(event.getKeyChar()))
-      event.consume();
-  }
-
-  /**
-   * Dispatches driver events for functional keys (ESC, ENTER, TAB, 1-9).
-   *
-   * @param event key event
-   */
-  public void keyPressed(final KeyEvent event) {
-    final int key = event.getKeyCode();
-    LOGGER.trace("Key pressed: '{}'", eventKeys(event));
-    if (isNotRecognizedEvent(event))
-      return;
-    switch (key) {
-      case VK_ESCAPE:
-        consumeKeyEventAndDispatchCommand(event, CANCEL);
-        break;
-      case VK_TAB:
-      case VK_1:
-      case VK_2:
-      case VK_3:
-      case VK_4:
-      case VK_5:
-      case VK_6:
-      case VK_7:
-      case VK_8:
-      case VK_9:
-        hints.select(hintIndexFromKey(key));
-        consumeKeyEventAndDispatchCommand(event, COMPLETE_INPUT);
-        break;
-      case VK_ENTER:
-        hints.select(0);
-        consumeKeyEventAndDispatchCommand(event, SUBMIT_INPUT);
-        break;
-    }
-  }
-
-  /**
-   * Recognizes and propagates input updates.
-   *
-   * @param event key event
-   */
-  public void keyReleased(KeyEvent event) {
-    Input.Update update = input.updateTo(inputField.input());
-    propagateInputUpdate(update);
-  }
-
-  private void consumeKeyEventAndDispatchCommand(final KeyEvent event, final Action action) {
-    event.consume();
-    dispatchEventFor(action);
-  }
-
-  private void dispatchEventFor(final Action action) {
-    final Event event = eventFor(action);
-    LOGGER.debug("Dispatching {}", event);
-    for (Handler handler : handlers)
-      handler.dispatch(event);
-  }
-
-  private void propagateInputUpdate(Input.Update update) {
+  private void updateInput(Input newInput) {
+    final Input.Update update = input.updateTo(newInput);
     if (update.isNotVoid()) {
       LOGGER.trace("Input changed: {}", update);
       input = update.newValue();
-      dispatchEventFor(UPDATE_INPUT);
+      dispatchEvent(CHANGED);
     }
-  }
-
-  private Event eventFor(Action action) {
-    return new Event(action, input, hints.selected());
-  }
-
-  private boolean isCompleteKey(final char key) {
-    return COMPLETE_KEY_MIN <= key && key <= COMPLETE_KEY_MAX;
-  }
-
-  private int hintIndexFromKey(final int key) {
-    if (VK_TAB == key)
-      return 0;
-    if (VK_1 <= key && key <= VK_9)
-      return key - VK_1;
-    throw new IllegalArgumentException("unsupported complete key: " + getKeyText(key));
-  }
-
-  private boolean isNotRecognizedEvent(KeyEvent event) {
-    return event.isShiftDown()
-        || event.isAltDown()
-        || event.isAltGraphDown()
-        || event.isControlDown()
-        || event.isMetaDown()
-        || event.isConsumed();
-  }
-
-  private String eventKeys(final KeyEvent event) {
-    final StringBuilder builder = new StringBuilder();
-    if (event.getModifiersEx() != 0)
-      builder.append(getModifiersExText(event.getModifiersEx())).append("+ ");
-    builder.append(getKeyText(event.getKeyCode()));
-    return builder.toString();
   }
 
 }

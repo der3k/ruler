@@ -6,27 +6,27 @@ import org.sikora.ruler.model.input.InputDriver;
 import org.sikora.ruler.ui.awt.AwtResultWindow;
 
 /**
- * Value object encapsulating input driver event and context.
+ * Value object encapsulating input driver inputEvent and context.
  */
 public final class InputEventInContext implements Context {
-  private final InputDriver.Event event;
+  private final InputDriver.InputEvent inputEvent;
   private final Context context;
 
-  public InputEventInContext(final InputDriver.Event event, final Context context) {
-    this.event = event;
+  public InputEventInContext(final InputDriver.InputEvent inputEvent, final Context context) {
+    this.inputEvent = inputEvent;
     this.context = context;
   }
 
-  public InputDriver.Action command() {
-    return event.action();
+  public InputDriver.Event event() {
+    return inputEvent.event();
   }
 
   public Input input() {
-    return event.input();
+    return inputEvent.input();
   }
 
   public Hints.Item hint() {
-    return event.hint();
+    return inputEvent.hint();
   }
 
   public InputDriver inputDriver() {

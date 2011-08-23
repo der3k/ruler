@@ -5,9 +5,9 @@ package org.sikora.ruler.task;
  */
 public interface Task {
   /**
-   * Performs task's action and returns result.
+   * Performs task's event and returns result.
    *
-   * @return result of action
+   * @return result of event
    */
   Result performAction();
 }

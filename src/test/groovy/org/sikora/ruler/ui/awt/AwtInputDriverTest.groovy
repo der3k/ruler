@@ -1,141 +1,72 @@
 package org.sikora.ruler.ui.awt;
 
 
-import java.awt.event.KeyEvent
 import org.sikora.ruler.model.input.Hints
 import org.sikora.ruler.model.input.Hints.Item
 import org.sikora.ruler.model.input.Input
 import org.sikora.ruler.model.input.InputDriver
-import spock.lang.Ignore
+import org.sikora.ruler.model.input.InputDriver.InputCommand
 import spock.lang.Specification
-import static java.awt.event.KeyEvent.*
-import static org.sikora.ruler.model.input.InputDriver.Action.*
+import static org.sikora.ruler.model.input.InputDriver.Command.*
+import static org.sikora.ruler.model.input.InputDriver.Event.*
 
-/**
- * User: der3k
- * Date: 1.8.11
- * Time: 20:51
- */
 public class AwtInputDriverTest extends Specification {
-  def driver = new AwtInputDriver()
-  def AwtInputWindow inputField = driver.inputField
-  def AwtHintsWindow hintsWindow = inputField.hintsWindow
-  def handler = Mock(InputDriver.Handler)
+  final def inputField = Mock(AwtInputWindow)
+  def driver = new AwtInputDriver(inputField)
+  def listener = Mock(InputDriver.Listener)
 
   def setup() {
-    driver.addHandler(handler)
+    driver.addListener(listener)
   }
+
+  // TODO write tests for all commands
 
   def 'sets input'() {
   when:
-    driver.issue(UPDATE_INPUT, Input.of('task'))
+    driver.issue(InputCommand.of(UPDATE, Input.of('task')))
   then:
-    inputField.input() == Input.of('task')
-    1 * handler.dispatch({ it.action() == UPDATE_INPUT })
+    1 * inputField.set(Input.of('task'))
+    1 * listener.dispatch({ it.event() == CHANGED })
   }
 
   def 'void input change is not propagated'() {
-    driver.issue(UPDATE_INPUT, Input.of('task'))
+    driver.issue(InputCommand.of(UPDATE, Input.of('task')))
   when:
-    driver.issue(UPDATE_INPUT, Input.of('task'))
+    driver.issue(InputCommand.of(UPDATE, Input.of('task')))
   then:
-    0 * handler.dispatch(_)
+    0 * listener.dispatch(_)
   }
 
   def 'sets hints'() {
+    def hints = new Hints([new Item('item')])
   when:
-    driver.issue(UPDATE_HINTS, new Hints([new Item('item')]))
+    driver.issue(InputCommand.of(HINT, hints))
   then:
-    hintsWindow.textArea.getText().contains('item')
-    1 * handler.dispatch({ it.action() == UPDATE_HINTS })
+    1 * inputField.set(hints)
   }
 
-  def 'issues command'() {
+  def 'propagates FOCUS command'() {
   when:
-    driver.issue(UPDATE_INPUT)
+    driver.issue(InputCommand.of(FOCUS))
   then:
-    1 * handler.dispatch({ it.action() == UPDATE_INPUT })
+    1 * inputField.focus()
   }
 
-  // TODO test the functionality without actual window
-  @Ignore
-  def 'propagates FOCUS_INPUT command'() {
+  def 'propagates HIDE command'() {
   when:
-    driver.issue(FOCUS_INPUT)
+    driver.issue(InputCommand.of(HIDE))
   then:
-    inputField.window.isFocused()
+    1 * inputField.hide()
   }
 
-  @Ignore
-  def 'propagates HIDE_INPUT command'() {
-    driver.issue(FOCUS_INPUT)
+  def 'propagates RESET command'() {
+    driver.issue(InputCommand.of(UPDATE, Input.of('task')))
   when:
-    driver.issue(HIDE_INPUT)
-  then:
-    !inputField.window.isVisible()
-  }
-
-  def 'propagates RESET_INPUT command'() {
-    driver.issue(UPDATE_INPUT, Input.of('task'))
-  when:
-    driver.issue(RESET_INPUT)
+    driver.issue(InputCommand.of(RESET))
   then:
     driver.input == Input.EMPTY
     driver.hints == Hints.NONE
+    1 * inputField.set(Input.EMPTY)
+    1 * inputField.set(Hints.NONE)
   }
-
-  def 'ESC key propagates as CANCEL command'() {
-    def event = Mock(KeyEvent)
-  when:
-    event.getKeyCode() >> VK_ESCAPE
-    driver.keyPressed(event)
-  then:
-    1 * handler.dispatch({ it.action() == CANCEL })
-  }
-
-  def 'TAB and 1-9 keys propagates as INPUT_COMPLETE command'() {
-    def event = Mock(KeyEvent)
-  when:
-    event.getKeyCode() >> code
-    driver.keyPressed(event)
-  then:
-    1 * handler.dispatch({ it.action() == COMPLETE_INPUT })
-  where:
-    code << [VK_TAB, VK_1, VK_2, VK_3, VK_4, VK_5, VK_6, VK_7, VK_8, VK_9]
-  }
-
-  def '1-9 INPUT_COMPLETE command selects indexed hint'() {
-    def item2 = new Item('item2')
-    driver.issue(UPDATE_HINTS, new Hints([new Item('item1'), item2]))
-    def event = Mock(KeyEvent)
-  when:
-    event.getKeyCode() >> VK_2
-    driver.keyPressed(event)
-  then:
-    driver.hints.selected() == item2
-    1 * handler.dispatch({ it.hint() == item2 })
-  }
-
-  def 'TAB INPUT_COMPLETE command selects the first hint'() {
-    def item1 = new Item('item1')
-    def item2 = new Item('item2')
-    driver.issue(UPDATE_HINTS, new Hints([item1, item2]))
-    def event = Mock(KeyEvent)
-  when:
-    event.getKeyCode() >> VK_TAB
-    driver.keyPressed(event)
-  then:
-    driver.hints.selected() == item1
-    1 * handler.dispatch({ it.hint() == item1 })
-  }
-
-  def 'ENTER key propagates SUBMIT_INPUT command'() {
-    def event = Mock(KeyEvent)
-  when:
-    event.getKeyCode() >> VK_ENTER
-    driver.keyPressed(event)
-  then:
-    1 * handler.dispatch({ it.action() == SUBMIT_INPUT })
-  }
-
 }

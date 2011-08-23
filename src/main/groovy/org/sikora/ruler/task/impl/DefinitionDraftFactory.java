@@ -25,11 +25,11 @@ public class DefinitionDraftFactory implements DraftFactory {
    */
   public Draft draftFrom(final InputEventInContext event) {
     final Definition definition = definitionRepository.find(event.input());
-    switch (event.command()) {
-      case UPDATE_INPUT:
+    switch (event.event()) {
+      case CHANGED:
         definition.onInputUpdate(event);
         break;
-      case COMPLETE_INPUT:
+      case COMPLETE_ISSUED:
         definition.onCompleteInput(event);
         break;
     }

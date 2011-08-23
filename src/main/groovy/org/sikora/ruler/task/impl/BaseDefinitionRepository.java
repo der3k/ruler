@@ -4,6 +4,7 @@ import com.melloware.jintellitype.JIntellitype;
 import org.sikora.ruler.context.InputEventInContext;
 import org.sikora.ruler.model.input.Hints;
 import org.sikora.ruler.model.input.Input;
+import org.sikora.ruler.model.input.InputDriver.InputCommand;
 import org.sikora.ruler.task.Definition;
 import org.sikora.ruler.task.DefinitionRepository;
 import org.sikora.ruler.task.Result;
@@ -11,7 +12,7 @@ import org.sikora.ruler.task.Task;
 
 import java.util.*;
 
-import static org.sikora.ruler.model.input.InputDriver.Action.*;
+import static org.sikora.ruler.model.input.InputDriver.Command.*;
 
 /**
  * Base definition repository, returning partially matched definitions
@@ -49,18 +50,18 @@ public class BaseDefinitionRepository implements DefinitionRepository {
 
       public void onInputUpdate(final InputEventInContext event) {
         if (partialMatches.size() == 0) {
-          event.inputDriver().issue(UPDATE_HINTS, Hints.NONE);
+          event.inputDriver().issue(InputCommand.of(HINT, Hints.NONE));
           return;
         }
         final ArrayList<Hints.Item> items = new ArrayList<Hints.Item>();
         for (Match match : partialMatches)
           items.add(new Hints.Item(match.definition().name()));
-        event.inputDriver().issue(UPDATE_HINTS, new Hints(items));
+        event.inputDriver().issue(InputCommand.of(HINT, new Hints(items)));
       }
 
       public void onCompleteInput(final InputEventInContext event) {
         if (event.hint() != Hints.Item.NONE) {
-          event.inputDriver().issue(UPDATE_INPUT, Input.of(event.hint().toString() + ' '));
+          event.inputDriver().issue(InputCommand.of(UPDATE, Input.of(event.hint().toString() + ' ')));
         }
       }
 
@@ -83,8 +84,8 @@ public class BaseDefinitionRepository implements DefinitionRepository {
       public Task createTask(final InputEventInContext event) {
         return new Task() {
           public Result performAction() {
-            event.inputDriver().issue(HIDE_INPUT);
-            event.inputDriver().issue(RESET_INPUT);
+            event.inputDriver().issue(InputCommand.of(HIDE));
+            event.inputDriver().issue(InputCommand.of(RESET));
             return new Result() {
               public void display() {
                 event.resultWindow().display(new Date().toString());
@@ -111,8 +112,8 @@ public class BaseDefinitionRepository implements DefinitionRepository {
       public Task createTask(final InputEventInContext event) {
         return new Task() {
           public Result performAction() {
-            event.inputDriver().issue(HIDE_INPUT);
-            event.inputDriver().issue(RESET_INPUT);
+            event.inputDriver().issue(InputCommand.of(HIDE));
+            event.inputDriver().issue(InputCommand.of(RESET));
             event.foregroundWindow().minimize();
             return new Result() {
               public void display() {
@@ -148,12 +149,12 @@ public class BaseDefinitionRepository implements DefinitionRepository {
     }
 
     public void onInputUpdate(final InputEventInContext event) {
-      event.inputDriver().issue(UPDATE_HINTS, Hints.NONE);
+      event.inputDriver().issue(InputCommand.of(HINT, Hints.NONE));
     }
 
     public void onCompleteInput(final InputEventInContext event) {
       if (event.hint() != Hints.Item.NONE) {
-        event.inputDriver().issue(UPDATE_INPUT, Input.of(event.hint().toString() + ' '));
+        event.inputDriver().issue(InputCommand.of(UPDATE, Input.of(event.hint().toString() + ' ')));
       }
     }
 
@@ -166,8 +167,8 @@ public class BaseDefinitionRepository implements DefinitionRepository {
         public Result performAction() {
           return new Result() {
             public void display() {
-              event.inputDriver().issue(HIDE_INPUT);
-              event.inputDriver().issue(RESET_INPUT);
+              event.inputDriver().issue(InputCommand.of(HIDE));
+              event.inputDriver().issue(InputCommand.of(RESET));
               event.resultWindow().display(name);
             }
           };

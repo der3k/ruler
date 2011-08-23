@@ -1,7 +1,7 @@
 package org.sikora.ruler.task;
 
 /**
- * Defines task action result behavior.
+ * Defines task event result behavior.
  */
 public interface Result {
   /**

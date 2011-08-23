@@ -3,8 +3,8 @@ package org.sikora.ruler.incubation
 import org.sikora.ruler.model.input.Hints
 
 import org.sikora.ruler.model.input.InputDriver
-import org.sikora.ruler.model.input.InputDriver.Event
-import static org.sikora.ruler.model.input.InputDriver.Action.*
+import org.sikora.ruler.model.input.InputDriver.InputEvent
+import static org.sikora.ruler.model.input.InputDriver.Command.*
 import org.sikora.ruler.ui.awt.AwtResultWindow
 
 class Draft {
@@ -26,16 +26,16 @@ interface HintsProvider {
 }
 
 interface DraftFactory {
-  Draft draftFor(Event event)
+  Draft draftFor(InputEvent event)
 }
 
-def handler = new InputDriver.Handler() {
+def handler = new InputDriver.Listener() {
   DraftFactory draftFactory
   AwtResultWindow resultWindow
 
-  void dispatch(Event event) {
+  void dispatch(InputEvent event) {
     def draft = draftFactory.draftFor(event)
-    switch (event.action()) {
+    switch (event.event()) {
       case SUBMIT_INPUT:
         if (draft.isComplete()) {
           def task = draft.toTask()

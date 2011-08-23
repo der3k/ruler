@@ -33,13 +33,13 @@ echo.
 goto end
 
 :init
-@rem Get action-line arguments, handling Windowz variants
+@rem Get command-line arguments, handling Windowz variants
 
 if not "%OS%" == "Windows_NT" goto win9xME_args
 if "%eval[2+2]" == "4" goto 4NT_args
 
 :win9xME_args
-@rem Slurp the action line arguments.
+@rem Slurp the command line arguments.
 set CMD_LINE_ARGS=
 set _SKIP=2
 
@@ -54,7 +54,7 @@ goto execute
 set CMD_LINE_ARGS=%$
 
 :execute
-@rem Setup the action line
+@rem Setup the command line
 
 set STARTER_MAIN_CLASS=org.gradle.wrapper.GradleWrapperMain
 set CLASSPATH=%DIRNAME%\gradle\wrapper\gradle-wrapper.jar
