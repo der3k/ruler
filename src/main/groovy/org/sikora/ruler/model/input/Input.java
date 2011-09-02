@@ -79,6 +79,10 @@ public final class Input {
     return marker;
   }
 
+  public String activeText() {
+    return text.substring(0, marker).trim();
+  }
+
   @Override
   public String toString() {
     return marker() > 0

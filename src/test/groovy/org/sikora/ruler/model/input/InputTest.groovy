@@ -10,35 +10,35 @@ import spock.lang.Specification
 public class InputTest extends Specification {
 
   def 'has text'() {
-    expect:
+  expect:
     Input.of('a').text() == 'a'
   }
 
   def 'marker marks position in the text'() {
     def input = Input.of('abc', 1)
-    expect:
+  expect:
     input.text() == 'abc'
     input.marker() == 1
   }
 
   def 'marker cannot be less than zero'() {
-    when:
+  when:
     Input.of("", -1)
-    then:
+  then:
     thrown IllegalArgumentException
   }
 
   def 'marker cannot be outside the text'() {
-    when:
+  when:
     Input.of("", 1)
-    then:
+  then:
     thrown IllegalArgumentException
   }
 
   def 'toSting formats input'() {
-    expect:
+  expect:
     input.toString() == expected
-    where:
+  where:
     input              | expected
     Input.EMPTY        | '|'
     Input.of('')       | '|'
@@ -49,36 +49,52 @@ public class InputTest extends Specification {
   }
 
   def 'equals() is defined based on text and position'() {
-    expect:
+  expect:
     Input.of('').equals(Input.EMPTY)
     !Input.of('a', 0).equals(Input.of('a', 1))
   }
 
   def 'can produce input update'() {
     def update = Input.of('a').updateTo(Input.of('ab'))
-    expect:
+  expect:
     update.oldValue() == Input.of('a')
     update.newValue() == Input.of('ab')
-    update.toString() =="'a|' => 'ab|'"
+    update.toString() == "'a|' => 'ab|'"
   }
 
   def 'new input value of update cannot be null'() {
-    when:
+  when:
     Input.of('a').updateTo(null)
-    then:
+  then:
     thrown IllegalArgumentException
   }
 
   def 'update detects void update'() {
     def update = Input.of('a').updateTo(Input.of('a'))
-    expect:
-      update.isVoid()
+  expect:
+    update.isVoid()
   }
 
   def 'update detects change'() {
     def update = Input.of('a').updateTo(Input.of('ab'))
-    expect:
-      !update.isVoid()
+  expect:
+    !update.isVoid()
+  }
+
+  def 'returns active text'() {
+  expect:
+    input.activeText() == expected
+  where:
+    input       | expected
+    Input.EMPTY | ''
+    Input.of(' ') | ''
+    Input.of(' ', 0) | ''
+    Input.of('a', 0) | ''
+    Input.of('a') | 'a'
+    Input.of('a ') | 'a'
+    Input.of(' a') | 'a'
+    Input.of(' a ') | 'a'
+    Input.of(' a b ') | 'a b'
   }
 
 

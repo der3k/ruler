@@ -2,6 +2,7 @@ package org.sikora.ruler.task.impl;
 
 import com.melloware.jintellitype.JIntellitype;
 import org.sikora.ruler.context.InputEventInContext;
+import org.sikora.ruler.incubation.fileTasks;
 import org.sikora.ruler.model.input.Hints;
 import org.sikora.ruler.model.input.Input;
 import org.sikora.ruler.model.input.InputDriver.InputCommand;
@@ -124,42 +125,18 @@ public class BaseDefinitionRepository implements DefinitionRepository {
         };
       }
     });
+    definitions.addAll((Collection<? extends Definition>) new fileTasks().run());
   }
 
-  public class DefinitionHelper implements Definition {
+  public class DefinitionHelper extends SimpleDefinition {
     private final String name;
 
     protected DefinitionHelper(final String name) {
       this.name = name;
     }
 
-    public Match match(final Input input) {
-      String text = input.text().trim();
-      if (text.isEmpty())
-        return Match.of(Match.NONE, this);
-      if (name.equals(text))
-        return Match.of(Match.EXACT, this);
-      if (name.startsWith(text))
-        return Match.of(50, this);
-      return Match.of(Match.NONE, this);
-    }
-
     public String name() {
       return name;
-    }
-
-    public void onInputUpdate(final InputEventInContext event) {
-      event.inputDriver().issue(InputCommand.of(HINT, Hints.NONE));
-    }
-
-    public void onCompleteInput(final InputEventInContext event) {
-      if (event.hint() != Hints.Item.NONE) {
-        event.inputDriver().issue(InputCommand.of(UPDATE, Input.of(event.hint().toString() + ' ')));
-      }
-    }
-
-    public boolean isCompleteFor(final InputEventInContext event) {
-      return match(event.input()).isExact();
     }
 
     public Task createTask(final InputEventInContext event) {
