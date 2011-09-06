@@ -1,7 +1,10 @@
 package org.sikora.ruler.task.impl;
 
 import org.sikora.ruler.context.InputEventInContext;
+import org.sikora.ruler.model.input.InputDriver;
 import org.sikora.ruler.task.*;
+import org.sikora.ruler.task.definition.Definition;
+import org.sikora.ruler.task.definition.DefinitionRepository;
 
 /**
  * User: der3k
@@ -20,27 +23,32 @@ public class DefinitionDraftFactory implements DraftFactory {
    * does not find definition for the event's input it returns DEFINITIONS_DRAFT
    * that provides definition hints for available tasks.
    *
-   * @param event input driver event in context
+   * @param eventInContext input driver event in context
    * @return task draft created by task definition, or DEFINITIONS_DRAFT
    */
-  public Draft draftFrom(final InputEventInContext event) {
-    final Definition definition = definitionRepository.find(event.input());
-    switch (event.event()) {
-      case CHANGED:
-        definition.onInputUpdate(event);
-        break;
-      case COMPLETE_ISSUED:
-        definition.onCompleteInput(event);
-        break;
-    }
+  public Draft draftFor(final InputEventInContext eventInContext) {
+    final Definition definition = definitionRepository.find(eventInContext);
     return new Draft() {
+      boolean definitive = false;
+      public void consumeEvent(final InputDriver inputDriver) {
+        switch (eventInContext.event()) {
+          case CHANGED:
+            definition.onInputUpdate(eventInContext, inputDriver);
+            break;
+          case COMPLETE_ISSUED:
+            definition.onCompleteInput(eventInContext, inputDriver);
+            break;
+          case SUBMIT_ISSUED:
+            definitive = definition.isCompleteFor(eventInContext);
+        }
+      }
 
-      public boolean isTaskComplete() {
-        return definition.isCompleteFor(event);
+      public boolean isDefinitive() {
+        return definitive;
       }
 
       public Task toTask() {
-        return definition.createTask(event);
+        return definition.newTask(eventInContext);
       }
     };
   }

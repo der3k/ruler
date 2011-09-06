@@ -1,15 +1,19 @@
 package org.sikora.ruler.task;
 
+import org.sikora.ruler.model.input.InputDriver;
+
 /**
  * Defines task draft behaviour.
  */
 public interface Draft {
+  void consumeEvent(InputDriver inputDriver);
+
   /**
    * Returns true when draft can define a task.
    *
    * @return true when task can be defined, false otherwise
    */
-  boolean isTaskComplete();
+  boolean isDefinitive();
 
   /**
    * Returns task definition.

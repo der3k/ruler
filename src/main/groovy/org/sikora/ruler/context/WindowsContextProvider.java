@@ -13,12 +13,8 @@ import static com.sun.jna.platform.win32.WinUser.*;
  * Microsoft Windows context provider utilizing JNA library.
  */
 public class WindowsContextProvider implements ContextProvider {
-  private final InputDriver inputDriver;
-  private final AwtResultWindow resultWindow;
 
-  public WindowsContextProvider(final InputDriver inputDriver, final AwtResultWindow resultWindow) {
-    this.inputDriver = inputDriver;
-    this.resultWindow = resultWindow;
+  public WindowsContextProvider() {
   }
 
   public Context currentContext() {
@@ -34,14 +30,6 @@ public class WindowsContextProvider implements ContextProvider {
             User32Window.INSTANCE.ShowWindow(active, User32Window.SW_MINIMIZE);
           }
         };
-      }
-
-      public InputDriver inputDriver() {
-        return inputDriver;
-      }
-
-      public AwtResultWindow resultWindow() {
-        return resultWindow;
       }
     };
   }

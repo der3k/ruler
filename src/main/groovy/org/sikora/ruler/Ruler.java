@@ -9,14 +9,17 @@ import org.sikora.ruler.context.WindowsContextProvider;
 import org.sikora.ruler.model.input.InputDriver;
 import org.sikora.ruler.model.input.InputDriver.InputCommand;
 import org.sikora.ruler.model.input.InputDriver.InputEvent;
-import org.sikora.ruler.task.*;
-import org.sikora.ruler.task.impl.BaseDefinitionRepository;
+import org.sikora.ruler.task.Draft;
+import org.sikora.ruler.task.DraftFactory;
+import org.sikora.ruler.task.Task;
+import org.sikora.ruler.task.definition.impl.BaseDefinitionRepository;
 import org.sikora.ruler.task.impl.DefinitionDraftFactory;
 import org.sikora.ruler.ui.awt.AwtInputDriver;
 import org.sikora.ruler.ui.awt.AwtInputWindow;
 import org.sikora.ruler.ui.awt.AwtResultWindow;
 
 import static org.sikora.ruler.model.input.InputDriver.Command.*;
+import static org.sikora.ruler.model.input.InputDriver.Event.*;
 
 /**
  * Input driver handler. It provides context based hints and executes recognized tasks. It is activated by
@@ -25,7 +28,9 @@ import static org.sikora.ruler.model.input.InputDriver.Command.*;
 public class Ruler implements InputDriver.Listener, HotkeyListener {
   private final DraftFactory draftFactory;
   private final ContextProvider contextProvider;
-  private Context currentContext;
+  private final InputDriver inputDriver;
+  private final AwtResultWindow resultWindow;
+  private Context context;
 
   /**
    * Configures global key hooks and wires Ruler to it. It uses AwtInputDriver for receiving users input.
@@ -34,9 +39,8 @@ public class Ruler implements InputDriver.Listener, HotkeyListener {
    */
   public static void main(final String[] args) {
     final AwtInputDriver inputDriver = new AwtInputDriver(new AwtInputWindow());
-    final WindowsContextProvider contextProvider = new WindowsContextProvider(inputDriver, new AwtResultWindow());
-    final DefinitionRepository definitionRepository = new BaseDefinitionRepository();
-    Ruler ruler = new Ruler(contextProvider, definitionRepository);
+    Ruler ruler = new Ruler(inputDriver, new AwtResultWindow(), new WindowsContextProvider(),
+        new DefinitionDraftFactory(new BaseDefinitionRepository()));
     inputDriver.addListener(ruler);
 
     JIntellitype.setLibraryLocation("../lib/JIntellitype64.dll");
@@ -46,10 +50,12 @@ public class Ruler implements InputDriver.Listener, HotkeyListener {
     hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ');
   }
 
-  private Ruler(final ContextProvider contextProvider, DefinitionRepository definitionRepository) {
+  private Ruler(final InputDriver inputDriver, final AwtResultWindow resultWindow, final ContextProvider contextProvider, final DraftFactory draftFactory) {
+    this.inputDriver = inputDriver;
+    this.resultWindow = resultWindow;
     this.contextProvider = contextProvider;
-    this.currentContext = contextProvider.currentContext();
-    this.draftFactory = new DefinitionDraftFactory(definitionRepository);
+    this.draftFactory = draftFactory;
+    this.context = contextProvider.currentContext();
   }
 
   /**
@@ -59,20 +65,16 @@ public class Ruler implements InputDriver.Listener, HotkeyListener {
    * @param inputEvent input driver inputEvent
    */
   public void dispatch(final InputEvent inputEvent) {
-    final InputEventInContext eventInContext = new InputEventInContext(inputEvent, currentContext);
-    final Draft draft = draftFactory.draftFrom(eventInContext);
-    switch (inputEvent.event()) {
-      case SUBMIT_ISSUED:
-        if (draft.isTaskComplete()) {
-          final Task task = draft.toTask();
-          final Result result = task.performAction();
-          result.display();
-        }
-        break;
-      case CANCEL_ISSUED:
-        currentContext.inputDriver().issue(InputCommand.of(HIDE));
-        currentContext.inputDriver().issue(InputCommand.of(RESET));
-        break;
+    if (inputEvent.event() == CANCEL_ISSUED) {
+      resetAndHideInput();
+      return;
+    }
+    final Draft draft = draftFactory.draftFor(new InputEventInContext(inputEvent, context));
+    draft.consumeEvent(inputDriver);
+    if (draft.isDefinitive()) {
+      resetAndHideInput();
+      final Task task = draft.toTask();
+      task.execute(resultWindow);
     }
   }
 
@@ -82,17 +84,22 @@ public class Ruler implements InputDriver.Listener, HotkeyListener {
    * @param hook hook id
    */
   public void onHotKey(final int hook) {
-    currentContext = contextProvider.currentContext();
     switch (hook) {
       case 1:
-        currentContext.inputDriver().issue(InputCommand.of(FOCUS));
+        context = contextProvider.currentContext();
+        inputDriver.issue(InputCommand.of(FOCUS));
         break;
       case 2:
-        currentContext.resultWindow().display();
+        resultWindow.display();
         break;
       default:
         break;
     }
+  }
+
+  private void resetAndHideInput() {
+    inputDriver.issue(InputCommand.of(HIDE));
+    inputDriver.issue(InputCommand.of(RESET));
   }
 
 }

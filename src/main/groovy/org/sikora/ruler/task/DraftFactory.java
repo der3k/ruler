@@ -9,8 +9,7 @@ public interface DraftFactory {
   /**
    * Returns task draft for input driver event and context.
    *
-   * @param inputEventInContext input driver event
    * @return task draft
    */
-  Draft draftFrom(final InputEventInContext inputEventInContext);
+  Draft draftFor(InputEventInContext eventInContext);
 }

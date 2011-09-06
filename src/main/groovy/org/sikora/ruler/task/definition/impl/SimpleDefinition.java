@@ -1,10 +1,11 @@
-package org.sikora.ruler.task.impl;
+package org.sikora.ruler.task.definition.impl;
 
 import org.sikora.ruler.context.InputEventInContext;
 import org.sikora.ruler.model.input.Hints;
 import org.sikora.ruler.model.input.Input;
+import org.sikora.ruler.model.input.InputDriver;
 import org.sikora.ruler.model.input.InputDriver.InputCommand;
-import org.sikora.ruler.task.Definition;
+import org.sikora.ruler.task.definition.Definition;
 
 import java.math.BigDecimal;
 
@@ -12,8 +13,8 @@ import static org.sikora.ruler.model.input.InputDriver.Command.*;
 
 public abstract class SimpleDefinition implements Definition {
 
-  public Match match(final Input input) {
-    String text = input.activeText().toLowerCase();
+  public Match match(final InputEventInContext inputEventInContext) {
+    String text = inputEventInContext.input().activeText().toLowerCase();
     String name = name().trim().toLowerCase();
     if (text.isEmpty())
       return Match.of(Match.NONE, this);
@@ -27,17 +28,17 @@ public abstract class SimpleDefinition implements Definition {
     return Match.of(Match.NONE, this);
   }
 
-  public void onInputUpdate(final InputEventInContext event) {
-    event.inputDriver().issue(InputCommand.of(HINT, Hints.NONE));
+  public void onInputUpdate(final InputEventInContext event, final InputDriver inputDriver) {
+    inputDriver.issue(InputCommand.of(HINT, Hints.NONE));
   }
 
-  public void onCompleteInput(final InputEventInContext event) {
+  public void onCompleteInput(final InputEventInContext event, final InputDriver inputDriver) {
     if (event.hint() != Hints.Item.NONE)
-      event.inputDriver().issue(InputCommand.of(UPDATE, Input.of(event.hint().toString() + ' ')));
+      inputDriver.issue(InputCommand.of(UPDATE, Input.of(event.hint().toString() + ' ')));
   }
 
   public boolean isCompleteFor(final InputEventInContext event) {
-    return match(event.input()).isExact();
+    return match(event).isExact();
   }
 
 }

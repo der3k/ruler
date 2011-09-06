@@ -1,5 +1,7 @@
 package org.sikora.ruler.task;
 
+import org.sikora.ruler.ui.awt.AwtResultWindow;
+
 /**
  * Defines task behavior.
  */
@@ -9,5 +11,5 @@ public interface Task {
    *
    * @return result of event
    */
-  Result performAction();
+  void execute(AwtResultWindow resultWindow);
 }

@@ -22,8 +22,7 @@ public class RulerTest extends Specification {
     def context = Mock(Context)
     def driver = Mock(InputDriver)
     contextProvider.currentContext() >> context
-    context.inputDriver() >> driver
-    def ruler = new Ruler(contextProvider, null)
+    def ruler = new Ruler(driver, null, contextProvider, null)
   when:
     ruler.onHotKey(1)
   then:
@@ -35,8 +34,7 @@ public class RulerTest extends Specification {
     def context = Mock(Context)
     def result = Mock(AwtResultWindow)
     contextProvider.currentContext() >> context
-    context.resultWindow() >> result
-    def ruler = new Ruler(contextProvider, null)
+    def ruler = new Ruler(null, result, contextProvider, null)
   when:
     ruler.onHotKey(2)
   then:

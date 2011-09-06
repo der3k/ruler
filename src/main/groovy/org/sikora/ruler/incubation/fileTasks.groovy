@@ -1,6 +1,6 @@
 package org.sikora.ruler.incubation
 
-import org.sikora.ruler.task.impl.ExecuteFileDefinition
+import org.sikora.ruler.task.definition.impl.ExecuteFileDefinition
 
 def folders = []
 folders << new File('H:/share/etc/links')

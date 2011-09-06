@@ -1,15 +1,16 @@
-package org.sikora.ruler.task.impl;
+package org.sikora.ruler.task.definition.impl;
 
 import com.melloware.jintellitype.JIntellitype;
 import org.sikora.ruler.context.InputEventInContext;
 import org.sikora.ruler.incubation.fileTasks;
 import org.sikora.ruler.model.input.Hints;
 import org.sikora.ruler.model.input.Input;
+import org.sikora.ruler.model.input.InputDriver;
 import org.sikora.ruler.model.input.InputDriver.InputCommand;
-import org.sikora.ruler.task.Definition;
-import org.sikora.ruler.task.DefinitionRepository;
-import org.sikora.ruler.task.Result;
 import org.sikora.ruler.task.Task;
+import org.sikora.ruler.task.definition.Definition;
+import org.sikora.ruler.task.definition.DefinitionRepository;
+import org.sikora.ruler.ui.awt.AwtResultWindow;
 
 import java.util.*;
 
@@ -26,13 +27,13 @@ public class BaseDefinitionRepository implements DefinitionRepository {
    * Returns first definition that exactly matches input or custom
    * definition containing all partial definition matches.
    *
-   * @param input input driver input
+   * @param eventInContext input driver input
    * @return exactly matching definition
    */
-  public Definition find(final Input input) {
+  public Definition find(InputEventInContext eventInContext) {
     final List<Definition.Match> partialMatches = new ArrayList<Definition.Match>();
     for (Definition definition : definitions) {
-      final Definition.Match match = definition.match(input);
+      final Definition.Match match = definition.match(eventInContext);
       if (match.isExact())
         return definition;
       if (match.isPartial())
@@ -41,28 +42,28 @@ public class BaseDefinitionRepository implements DefinitionRepository {
     Collections.sort(partialMatches);
 
     return new Definition() {
-      public Match match(final Input input) {
-        return Match.of(Match.EXACT, this);
+      public Match match(final InputEventInContext eventInContext) {
+        throw new IllegalStateException("operation not supported");
       }
 
       public String name() {
-        return "allTasks";
+        throw new IllegalStateException("operation not supported");
       }
 
-      public void onInputUpdate(final InputEventInContext event) {
+      public void onInputUpdate(final InputEventInContext event, final InputDriver inputDriver) {
         if (partialMatches.size() == 0) {
-          event.inputDriver().issue(InputCommand.of(HINT, Hints.NONE));
+          inputDriver.issue(InputCommand.of(HINT, Hints.NONE));
           return;
         }
         final ArrayList<Hints.Item> items = new ArrayList<Hints.Item>();
         for (Match match : partialMatches)
           items.add(new Hints.Item(match.definition().name()));
-        event.inputDriver().issue(InputCommand.of(HINT, new Hints(items)));
+        inputDriver.issue(InputCommand.of(HINT, new Hints(items)));
       }
 
-      public void onCompleteInput(final InputEventInContext event) {
+      public void onCompleteInput(final InputEventInContext event, InputDriver inputDriver) {
         if (event.hint() != Hints.Item.NONE) {
-          event.inputDriver().issue(InputCommand.of(UPDATE, Input.of(event.hint().toString() + ' ')));
+          inputDriver.issue(InputCommand.of(UPDATE, Input.of(event.hint().toString() + ' ')));
         }
       }
 
@@ -70,8 +71,8 @@ public class BaseDefinitionRepository implements DefinitionRepository {
         return false;
       }
 
-      public Task createTask(final InputEventInContext event) {
-        throw new IllegalArgumentException("not supported operation");
+      public Task newTask(final InputEventInContext event) {
+        throw new IllegalStateException("operation not supported");
       }
     };
   }
@@ -82,23 +83,17 @@ public class BaseDefinitionRepository implements DefinitionRepository {
   public BaseDefinitionRepository() {
     definitions.add(new DefinitionHelper("now") {
       @Override
-      public Task createTask(final InputEventInContext event) {
+      public Task newTask(final InputEventInContext event) {
         return new Task() {
-          public Result performAction() {
-            event.inputDriver().issue(InputCommand.of(HIDE));
-            event.inputDriver().issue(InputCommand.of(RESET));
-            return new Result() {
-              public void display() {
-                event.resultWindow().display(new Date().toString());
-              }
-            };
+          public void execute(final AwtResultWindow resultWindow) {
+            resultWindow.display(new Date().toString());
           }
         };
       }
     });
     definitions.add(new DefinitionHelper("quit") {
       @Override
-      public Task createTask(final InputEventInContext event) {
+      public Task newTask(final InputEventInContext event) {
         JIntellitype.getInstance().cleanUp();
         System.exit(0);
         return null;
@@ -110,17 +105,10 @@ public class BaseDefinitionRepository implements DefinitionRepository {
     });
     definitions.add(new DefinitionHelper("minimize") {
       @Override
-      public Task createTask(final InputEventInContext event) {
+      public Task newTask(final InputEventInContext event) {
         return new Task() {
-          public Result performAction() {
-            event.inputDriver().issue(InputCommand.of(HIDE));
-            event.inputDriver().issue(InputCommand.of(RESET));
+          public void execute(final AwtResultWindow resultWindow) {
             event.foregroundWindow().minimize();
-            return new Result() {
-              public void display() {
-                // nothing to display
-              }
-            };
           }
         };
       }
@@ -139,16 +127,10 @@ public class BaseDefinitionRepository implements DefinitionRepository {
       return name;
     }
 
-    public Task createTask(final InputEventInContext event) {
+    public Task newTask(final InputEventInContext event) {
       return new Task() {
-        public Result performAction() {
-          return new Result() {
-            public void display() {
-              event.inputDriver().issue(InputCommand.of(HIDE));
-              event.inputDriver().issue(InputCommand.of(RESET));
-              event.resultWindow().display(name);
-            }
-          };
+        public void execute(final AwtResultWindow resultWindow) {
+          resultWindow.display(name);
         }
       };
     }

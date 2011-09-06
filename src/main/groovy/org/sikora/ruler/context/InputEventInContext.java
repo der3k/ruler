@@ -29,14 +29,6 @@ public final class InputEventInContext implements Context {
     return inputEvent.hint();
   }
 
-  public InputDriver inputDriver() {
-    return context.inputDriver();
-  }
-
-  public AwtResultWindow resultWindow() {
-    return context.resultWindow();
-  }
-
   public Window foregroundWindow() {
     return context.foregroundWindow();
   }

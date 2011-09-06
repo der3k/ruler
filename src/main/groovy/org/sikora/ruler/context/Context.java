@@ -9,9 +9,5 @@ import org.sikora.ruler.ui.awt.AwtResultWindow;
  * Time: 19:26
  */
 public interface Context {
-  InputDriver inputDriver();
-
-  AwtResultWindow resultWindow();
-
   Window foregroundWindow();
 }
