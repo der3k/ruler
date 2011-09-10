@@ -1,5 +1,6 @@
 package org.sikora.ruler.ui.awt;
 
+import org.sikora.ruler.model.input.Hints;
 import org.sikora.ruler.model.input.InputDriver;
 import org.sikora.ruler.model.input.InputDriver.InputCommand;
 import org.slf4j.Logger;
@@ -62,7 +63,7 @@ public class AwtInputKeyListener implements KeyListener {
         issueKeyCommand(keyEvent, InputCommand.of(COMPLETE, hintIndexFromKey(key)));
         break;
       case VK_ENTER:
-        issueKeyCommand(keyEvent, InputCommand.of(SUBMIT, 0));
+        issueKeyCommand(keyEvent, InputCommand.of(SUBMIT, Hints.SELECT_DEFAULT));
         break;
     }
   }

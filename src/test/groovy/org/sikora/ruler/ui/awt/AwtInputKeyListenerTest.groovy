@@ -6,6 +6,7 @@ import org.sikora.ruler.model.input.InputDriver
 import spock.lang.Specification
 import static java.awt.event.KeyEvent.*
 import static org.sikora.ruler.model.input.InputDriver.Command.*
+import org.sikora.ruler.model.input.Hints
 
 public class AwtInputKeyListenerTest extends Specification {
   def driver = Mock(InputDriver)
@@ -55,6 +56,6 @@ public class AwtInputKeyListenerTest extends Specification {
     event.getKeyCode() >> VK_ENTER
     listener.keyPressed(event)
   then:
-    1 * driver.issue({ it.command() == SUBMIT && it.selectHint() == 0 })
+    1 * driver.issue({ it.command() == SUBMIT && it.selectHint() == Hints.SELECT_DEFAULT })
   }
 }

@@ -7,6 +7,9 @@ import java.util.List;
  * Data object containing hint items. It allows to select hint by index.
  */
 public class Hints {
+  public final static int SELECT_FIRST = 0;
+  public final static int SELECT_DEFAULT = -1;
+
   /**
    * Value representing no hints.
    */
@@ -36,16 +39,19 @@ public class Hints {
   }
 
   /**
-   * Selects current item. If the index is out of bound it silently selects Item.NONE.
+   * Selects item by index. If the index is out of bound it silently selects Item.NONE.
+   * There is special index named SELECT_DEFAULT represented by negative constant that selects
+   * the first item if it is the only item.
    *
    * @param index item index
    */
   public void select(int index) {
-    if (index < 0 || index >= items.size()) {
+    if (index == SELECT_DEFAULT && items.size() == 1)
+      selected = items.get(0);
+    else if (index < 0 || index >= items.size())
       selected = Item.NONE;
-      return;
-    }
-    selected = items.get(index);
+    else
+      selected = items.get(index);
   }
 
 

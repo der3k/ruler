@@ -29,19 +29,19 @@ public abstract class SimpleDefinition implements Definition {
   }
 
   public boolean handleEvent(final InputEventInContext eventInContext, final InputDriver inputDriver) {
-    boolean complete = false;
+    boolean definitive = false;
     switch (eventInContext.event()) {
       case CHANGED:
         inputDriver.issue(InputCommand.of(HINT, Hints.NONE));
         break;
       case COMPLETE_ISSUED:
-        complete = true;
-        break;
+//        definitive = true;
+        break; 
       case SUBMIT_ISSUED:
-        complete = true;
+        definitive = true;
         break;
     }
-    return complete;
+    return definitive;
   }
 
 }
