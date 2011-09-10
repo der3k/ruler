@@ -14,69 +14,69 @@ public class HintsTest extends Specification {
 
   def 'can select item by zero based index'() {
     def item = new Item('item2')
-    def hints = new Hints([new Item('item1'), item])
+    def hints = Hints.of([new Item('item1'), item])
     hints.select(1)
-    expect:
+  expect:
     hints.selected() == item
   }
 
   def 'selecting out of range selects nothing'() {
     def item = new Item('item1')
-    def hints = new Hints([item])
+    def hints = Hints.of([item])
     hints.select(0)
     hints.select(1) // out of range!
-    expect:
+  expect:
     hints.selected() == Item.NONE
   }
 
-  def 'cannot create empty hints'() {
-    expect:
-    try {
-      new Hints(items)
-      throw new Exception('test should fail but did not')
-    } catch (RuntimeException expected) {
-      // expected
-    }
-    where:
-    items << [null, []]
+  def 'cannot create hints from null'() {
+  when:
+    Hints.of(null)
+  then:
+    thrown IllegalArgumentException
   }
 
+  def 'hints from no items return Hints.NONE constant'() {
+    expect: Hints.of([]) is Hints.NONE
+  }
+
+
   def 'new hints have nothing selected'() {
-    expect:
+  expect:
     Hints.NONE.selected() == Hints.Item.NONE
-    new Hints([new Item('item')]).selected() == Hints.Item.NONE
+    Hints.of([new Item('item')]).selected() == Hints.Item.NONE
   }
 
   def 'no hints have no items'() {
-    expect:
+  expect:
     Hints.NONE.items().length == 0
   }
 
   def 'returns number of items'() {
-    expect:
+  expect:
     hints.size() == size
-    where:
+  where:
     hints                                             | size
     Hints.NONE                                        | 0
-    new Hints([new Item('item')])                     | 1
-    new Hints([new Item('item1'), new Item('item2')]) | 2
+    Hints.of([new Item('item')])                     | 1
+    Hints.of([new Item('item1'), new Item('item2')]) | 2
   }
 
   def 'returns items'() {
     def item = new Item('item')
-    expect:
-    new Hints([item]).items()[0] == item
+  expect:
+    Hints.of([item]).items()[0] == item
   }
 
   def 'cannot create item with empty or null text'() {
-    expect:
+  expect:
     try {
       new Hints.Item(text)
       throw new Exception('test should fail but did not')
     } catch (RuntimeException expected) {
       // expected
     }
-    where:
+  where:
     text << [null, '', ' ', "\t", "\n"]
   }
 }

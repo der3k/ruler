@@ -36,7 +36,7 @@ public class DefinitionsDefinition implements Definition {
           final ArrayList<Hints.Item> items = new ArrayList<Hints.Item>();
           for (Match match : matches)
             items.add(new Hints.Item(match.definition().name()));
-          inputDriver.issue(InputCommand.of(HINT, new Hints(items)));
+          inputDriver.issue(InputCommand.of(HINT, Hints.of(items)));
         }
         break;
       case COMPLETE_ISSUED:

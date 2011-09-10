@@ -7,7 +7,6 @@ import java.util.List;
  * Data object containing hint items. It allows to select hint by index.
  */
 public class Hints {
-  public final static int SELECT_FIRST = 0;
   public final static int SELECT_DEFAULT = -1;
 
   /**
@@ -18,23 +17,26 @@ public class Hints {
   private Item selected = Item.NONE;
   private final List<Item> items = new ArrayList<Item>();
 
-  private Hints() {
-  }
-
-  //TODO implement static factory that would return Hints.NONE when list is empty
-
   /**
    * Creates hints from list of items. There will be Item.NONE selected.
    *
    * @param items list of hint items
    * @throws IllegalArgumentException when items are null or contain no item
    */
-  public Hints(List<Item> items) {
-    super();
+  public static Hints of(List<Item> items) {
     if (items == null)
       throw new IllegalArgumentException("items cannot be null");
-    if (items.size() == 0)
-      throw new IllegalArgumentException("no hint items specified");
+    if (items.isEmpty())
+      return NONE;
+    else
+      return new Hints(items);
+  }
+
+  private Hints() {
+  }
+
+  private Hints(List<Item> items) {
+    super();
     this.items.addAll(items);
   }
 

@@ -35,6 +35,7 @@ public abstract class SimpleDefinition implements Definition {
         inputDriver.issue(InputCommand.of(HINT, Hints.NONE));
         break;
       case COMPLETE_ISSUED:
+// by enabling next line, complete would also cause task execution, maybe too dangerous
 //        definitive = true;
         break; 
       case SUBMIT_ISSUED:
