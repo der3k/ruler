@@ -18,6 +18,8 @@ public class Hints {
   private Hints() {
   }
 
+  //TODO implement static factory that would return Hints.NONE when list is empty
+
   /**
    * Creates hints from list of items. There will be Item.NONE selected.
    *

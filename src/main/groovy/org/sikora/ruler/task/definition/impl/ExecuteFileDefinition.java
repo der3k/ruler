@@ -10,13 +10,15 @@ import java.util.ArrayList;
 
 public class ExecuteFileDefinition extends SimpleDefinition {
   private final File file;
+  private final String name;
 
   public ExecuteFileDefinition(final File file) {
     this.file = file;
+    this.name = baseName(file);
   }
 
   public String name() {
-    return file.getName();
+    return name;
   }
 
   public Task newTask(final InputEventInContext event) {
@@ -34,5 +36,11 @@ public class ExecuteFileDefinition extends SimpleDefinition {
         }
       }
     };
+  }
+
+  private String baseName(final File file) { 
+    String name = file.getName();
+    final int dotIndex = name.lastIndexOf('.');
+    return dotIndex > 0 ? name.substring(0, dotIndex) : name;
   }
 }

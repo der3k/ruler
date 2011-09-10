@@ -31,51 +31,24 @@ public class BaseDefinitionRepository implements DefinitionRepository {
    * @return exactly matching definition
    */
   public Definition find(InputEventInContext eventInContext) {
+    final List<Definition.Match> exactMatches = new ArrayList<Definition.Match>();
     final List<Definition.Match> partialMatches = new ArrayList<Definition.Match>();
     for (Definition definition : definitions) {
       final Definition.Match match = definition.match(eventInContext);
       if (match.isExact())
-        return definition;
-      if (match.isPartial())
+        exactMatches.add(match);
+      else if (match.isPartial())
         partialMatches.add(match);
     }
-    Collections.sort(partialMatches);
-
-    return new Definition() {
-      public Match match(final InputEventInContext eventInContext) {
-        throw new IllegalStateException("operation not supported");
-      }
-
-      public String name() {
-        throw new IllegalStateException("operation not supported");
-      }
-
-      public void onInputUpdate(final InputEventInContext event, final InputDriver inputDriver) {
-        if (partialMatches.size() == 0) {
-          inputDriver.issue(InputCommand.of(HINT, Hints.NONE));
-          return;
-        }
-        final ArrayList<Hints.Item> items = new ArrayList<Hints.Item>();
-        for (Match match : partialMatches)
-          items.add(new Hints.Item(match.definition().name()));
-        inputDriver.issue(InputCommand.of(HINT, new Hints(items)));
-      }
-
-      public void onCompleteInput(final InputEventInContext event, InputDriver inputDriver) {
-        if (event.hint() != Hints.Item.NONE) {
-          inputDriver.issue(InputCommand.of(UPDATE, Input.of(event.hint().toString() + ' ')));
-        }
-      }
-
-      public boolean isCompleteFor(final InputEventInContext event) {
-        return false;
-      }
-
-      public Task newTask(final InputEventInContext event) {
-        throw new IllegalStateException("operation not supported");
-      }
-    };
-  }
+    Definition definition;
+    if (exactMatches.size() == 1)
+     definition =  exactMatches.get(0).definition();
+    else if (exactMatches.size() > 1)
+      definition = new DefinitionsDefinition(exactMatches);
+    else
+      definition = new DefinitionsDefinition(partialMatches);
+    return definition;
+   }
 
   /**
    * Creates repository with predefined definitions.

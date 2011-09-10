@@ -1,7 +1,6 @@
 package org.sikora.ruler.task.definition;
 
 import org.sikora.ruler.context.InputEventInContext;
-import org.sikora.ruler.model.input.Input;
 import org.sikora.ruler.model.input.InputDriver;
 import org.sikora.ruler.task.Task;
 
@@ -18,35 +17,22 @@ public interface Definition {
   String name();
 
   /**
-   * Return this definition input matching..
+   * Return this definition input match.
    *
    * @param eventInContext input driver input
    * @return match
    */
   Match match(InputEventInContext eventInContext);
 
-
   /**
-   * Responds to input update event.
+   * Handles input event expecting that input matches exactly. It return true when task
+   * definition is complete.
    *
-   * @param event input event in context
+   * @param eventInContext input event in context
+   * @param inputDriver    input driver
+   * @return true when new task can be created, false otherwise
    */
-  void onInputUpdate(InputEventInContext event, InputDriver inputDriver);
-
-  /**
-   * Responds to complete input event.
-   *
-   * @param event complete input event in context
-   */
-  void onCompleteInput(InputEventInContext event, InputDriver inputDriver);
-
-  /**
-   * Returns true if the definition is complete for given input.
-   *
-   * @param event input event in context
-   * @return true if the input defines complete task, false otherwise
-   */
-  boolean isCompleteFor(final InputEventInContext event);
+  boolean handleEvent(InputEventInContext eventInContext, InputDriver inputDriver);
 
   /**
    * Creates new task from event.

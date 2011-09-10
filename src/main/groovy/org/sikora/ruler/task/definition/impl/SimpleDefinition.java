@@ -28,17 +28,20 @@ public abstract class SimpleDefinition implements Definition {
     return Match.of(Match.NONE, this);
   }
 
-  public void onInputUpdate(final InputEventInContext event, final InputDriver inputDriver) {
-    inputDriver.issue(InputCommand.of(HINT, Hints.NONE));
-  }
-
-  public void onCompleteInput(final InputEventInContext event, final InputDriver inputDriver) {
-    if (event.hint() != Hints.Item.NONE)
-      inputDriver.issue(InputCommand.of(UPDATE, Input.of(event.hint().toString() + ' ')));
-  }
-
-  public boolean isCompleteFor(final InputEventInContext event) {
-    return match(event).isExact();
+  public boolean handleEvent(final InputEventInContext eventInContext, final InputDriver inputDriver) {
+    boolean complete = false;
+    switch (eventInContext.event()) {
+      case CHANGED:
+        inputDriver.issue(InputCommand.of(HINT, Hints.NONE));
+        break;
+      case COMPLETE_ISSUED:
+        complete = true;
+        break;
+      case SUBMIT_ISSUED:
+        complete = true;
+        break;
+    }
+    return complete;
   }
 
 }

@@ -56,7 +56,7 @@ public class AwtHintsWindow {
       appendItemLabel(content, i, items[i - 1]).append("\n");
     appendItemLabel(content, size, items[size - 1]);
     textArea.setText(content.toString());
-    window.setSize(600, size * 40);
+    window.setSize(600, size * 40 + 10);
   }
 
   private StringBuilder appendItemLabel(final StringBuilder builder, final int i, final Hints.Item item) {

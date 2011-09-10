@@ -31,16 +31,7 @@ public class DefinitionDraftFactory implements DraftFactory {
     return new Draft() {
       boolean definitive = false;
       public void consumeEvent(final InputDriver inputDriver) {
-        switch (eventInContext.event()) {
-          case CHANGED:
-            definition.onInputUpdate(eventInContext, inputDriver);
-            break;
-          case COMPLETE_ISSUED:
-            definition.onCompleteInput(eventInContext, inputDriver);
-            break;
-          case SUBMIT_ISSUED:
-            definitive = definition.isCompleteFor(eventInContext);
-        }
+        definitive = definition.handleEvent(eventInContext, inputDriver);
       }
 
       public boolean isDefinitive() {
