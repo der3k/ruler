@@ -33,7 +33,6 @@ public class BaseDefinitionRepository implements DefinitionRepository {
                 ((ReloadableDefinitionFactory) factory).reload();
             for (Definition definition : factory.definitions()) {
                 definitions.add(definition);
-                System.out.println("added '" + definition.name() + "'");
             }
         }
         definitions.add(reloadDefinition());
