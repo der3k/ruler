@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ExecuteFileDefinition extends SimpleDefinition {
+public class ExecuteFileDefinition extends EditDistanceDefinition {
   private final File file;
   private final String name;
 

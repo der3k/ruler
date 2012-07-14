@@ -11,7 +11,7 @@ import org.sikora.ruler.ui.awt.AwtResultWindow;
  * Time: 18:27
  * To change this template use File | Settings | File Templates.
  */
-public class DefinitionHelper extends SimpleDefinition {
+public class DefinitionHelper extends EditDistanceDefinition {
     private final String name;
 
     protected DefinitionHelper(final String name) {
