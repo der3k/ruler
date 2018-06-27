@@ -47,7 +47,7 @@ public class Ruler implements InputDriver.Listener, HotkeyListener {
         JIntellitype.setLibraryLocation("../lib/JIntellitype64.dll");
         JIntellitype hook = JIntellitype.getInstance();
         hook.addHotKeyListener(ruler);
-        hook.registerHotKey(1, JIntellitype.MOD_SHIFT, (int) ' ');
+        hook.registerHotKey(1, JIntellitype.MOD_ALT, (int) ' ');
         hook.registerHotKey(2, JIntellitype.MOD_CONTROL + JIntellitype.MOD_SHIFT, (int) ' ');
     }
 

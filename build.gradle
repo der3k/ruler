@@ -1,11 +1,13 @@
-import org.gradle.external.javadoc.StandardJavadocDocletOptions
-
 apply plugin: 'groovy'
 apply plugin: 'application'
 apply plugin: 'idea'
 
-version = '1.0-M6'
-archiveBaseName = 'ruler'
+defaultTasks 'clean', 'distZip'
+
+project.ext {
+  version = '1.0-M6'
+  archiveBaseName = 'ruler'
+}
 
 mainClassName = 'org.sikora.ruler.Ruler'
 
@@ -14,8 +16,8 @@ dependencies {
   compile files('lib/jna-3.3.0.jar')
   compile files('lib/jna-3.3.0-platform.jar')
   compile 'ch.qos.logback:logback-classic:0.9.29'
+  compile 'org.codehaus.groovy:groovy-all:1.8.0'
   runtime fileTree(dir: 'lib', include: '*.dll')
-  groovy 'org.codehaus.groovy:groovy-all:1.8.0'
   testCompile 'org.spockframework:spock-core:0.5-groovy-1.8'
   testRuntime 'cglib:cglib-nodep:2.2.2'
   testRuntime 'org.objenesis:objenesis:1.2'
@@ -29,30 +31,10 @@ distZip {
   }
 }
 
-javadoc {
-  options = new StandardJavadocDocletOptions()
-  options.links('http://download.oracle.com/javase/6/docs/api/')
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-  classifier = 'javadoc'
-  from javadoc.destinationDir
-}
-
-artifacts {
-  archives sourcesJar
-  archives javadocJar
-}
-
 repositories {
   mavenCentral()
 }
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.0-milestone-3'
+  gradleVersion = '4.8.1'
 }
